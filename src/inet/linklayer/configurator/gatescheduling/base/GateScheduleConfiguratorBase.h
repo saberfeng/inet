@@ -10,10 +10,12 @@
 
 #include "inet/common/Units.h"
 #include "inet/networklayer/configurator/base/NetworkConfiguratorBase.h"
+#include <string>
 
 namespace inet {
 
 using namespace units::values;
+using std::string;
 
 class INET_API GateScheduleConfiguratorBase : public NetworkConfiguratorBase
 {

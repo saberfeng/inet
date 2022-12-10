@@ -105,6 +105,7 @@ void GateScheduleConfiguratorBase::addPorts(Input& input) const
             if (!networkInterface->isLoopback()) {
                 auto subqueue = networkInterface->findModuleByPath(".macLayer.queue.queue[0]");
                 auto port = new Input::Port();
+//                int vec_size = subqueue->getVectorSize();
                 port->numGates = subqueue != nullptr ? subqueue->getVectorSize() : -1;
                 port->module = interface->networkInterface;
                 port->datarate = bps(interface->networkInterface->getDatarate());
@@ -258,6 +259,14 @@ void GateScheduleConfiguratorBase::configureGateScheduling(cModule *networkNode,
     simtime_t slotEnd = 0;
     int gateIndex = gate->getIndex();
     auto port = gateSchedulingInput->getPort(networkInterface);
+
+    string startNode = port->startNode->module->getFullName(); // "d0"
+    string endNode = port->endNode->module->getFullName(); // "s0"
+    string port_id = startNode + "-" + endNode;
+    if (port_id == string("s0-d0") && gateIndex == 7){
+        port_id += "!";
+    }
+
     auto it = gateSchedulingOutput->gateSchedules.find(port);
     if (it == gateSchedulingOutput->gateSchedules.end())
         throw cRuntimeError("Cannot find schedule for interface, interface = %s", networkInterface->getInterfaceFullPath().c_str());
