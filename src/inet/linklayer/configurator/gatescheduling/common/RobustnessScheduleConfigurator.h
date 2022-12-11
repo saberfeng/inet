@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_map>
 #include <sstream>
+#include <unistd.h>
 
 
 namespace inet{
@@ -47,6 +48,7 @@ protected:
             shared_ptr<PortSchedule> port_schedule) const;
     void outputGateSchedules(Output* output) const;
 };
+
 
 }
 

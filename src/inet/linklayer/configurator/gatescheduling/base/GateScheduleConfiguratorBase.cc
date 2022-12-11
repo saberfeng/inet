@@ -135,6 +135,10 @@ void GateScheduleConfiguratorBase::addPorts(Input& input) const
             });
             ASSERT(port->endNode);
             ASSERT(port->otherPort);
+
+            string startNode = port->startNode->module->getFullName(); // "d0"
+            string endNode = port->endNode->module->getFullName(); // "s0"
+            port->portId = startNode + "-" + endNode; // "d0-s0"
         }
     }
 }
@@ -260,10 +264,11 @@ void GateScheduleConfiguratorBase::configureGateScheduling(cModule *networkNode,
     int gateIndex = gate->getIndex();
     auto port = gateSchedulingInput->getPort(networkInterface);
 
+    // ----------- debug ----------------
     string startNode = port->startNode->module->getFullName(); // "d0"
     string endNode = port->endNode->module->getFullName(); // "s0"
     string port_id = startNode + "-" + endNode;
-    if (port_id == string("s0-d0") && gateIndex == 7){
+    if ((port_id == string("s0-d0")) && (gateIndex == 7)){
         port_id += "!";
     }
 

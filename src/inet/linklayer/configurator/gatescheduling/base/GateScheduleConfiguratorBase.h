@@ -70,6 +70,7 @@ class INET_API GateScheduleConfiguratorBase : public NetworkConfiguratorBase
             NetworkNode *startNode = nullptr; // the network node where this port is
             NetworkNode *endNode = nullptr; // the network node to which this port is connected
             Port *otherPort = nullptr; // the other port to which this port is connected
+            string portId = string(""); // startNode-endNode
         };
 
         // an Ethernet switch

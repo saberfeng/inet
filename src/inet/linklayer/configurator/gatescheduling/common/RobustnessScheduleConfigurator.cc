@@ -2,6 +2,7 @@
 #include "inet/common/MyHelper.h"
 #include <fstream>
 #include <vector>
+#include <chrono>
 
 
 namespace inet {
@@ -11,6 +12,7 @@ using std::ifstream;
 using std::ofstream;
 
 Define_Module(RobustnessScheduleConfigurator);
+
 
 RobustnessScheduleConfigurator::Output *RobustnessScheduleConfigurator::computeGateScheduling(const Input& input) const
 {
@@ -38,15 +40,23 @@ RobustnessScheduleConfigurator::Output *RobustnessScheduleConfigurator::computeG
     }
     for (auto application : input.applications)
         output->applicationStartTimes[application] = 0;
-    outputGateSchedules(output);
-    return output;
+    outputGateSchedules(output); // log
+    return output; // TODO: at this point, s0-d0 has no schedule
 }
 
+
+// log imported gate schedules
 void RobustnessScheduleConfigurator::outputGateSchedules(Output* output) const{
     string output_path = par("output_schedule_path");
     ofstream output_file(output_path);
 
+    // getting current time
+    auto now = std::chrono::system_clock::now();
+    std::time_t end_time = std::chrono::system_clock::to_time_t(now);
+
     string content;
+    stringstream ss; ss << string(std::ctime(&end_time)) << std::endl;
+    content += ss.str();
     for (auto const& port_schedules: output->gateSchedules){
         auto port = port_schedules.first;
         string startNode = port->startNode->module->getFullName(); // "d0"
@@ -138,6 +148,13 @@ void RobustnessScheduleConfigurator::addEmptySchedule(
 }
 
 RobustnessScheduleConfigurator::ScheduleMap RobustnessScheduleConfigurator::parseScheduleInput(string input_path) const{
+
+    // ----- debug ---------
+//    char cwd[PATH_MAX];
+//    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+//       printf("Current working dir: %s\n", cwd);
+//    }
+
     string line;
     std::ifstream schedule_file(input_path);
     ScheduleMap schedule_map = ScheduleMap();
