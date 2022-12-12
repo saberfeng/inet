@@ -1,5 +1,21 @@
-Mon Dec 12 20:32:45 2022
+Mon Dec 12 21:27:36 2022
 
+d0-s0 Idx:0 Dur:1000 Start:0 0-1000
+d0-s0 Idx:1 Dur:1000 Start:0 0-1000
+d0-s0 Idx:2 Dur:1000 Start:0 0-1000
+d0-s0 Idx:3 Dur:1000 Start:0 0-1000
+d0-s0 Idx:4 Dur:1000 Start:0 0-1000
+d0-s0 Idx:5 Dur:1000 Start:0 0-1000
+d0-s0 Idx:6 Dur:1000 Start:0 0-1000
+d0-s0 Idx:7 Dur:1000 Start:0 0-1000
+d1-s0 Idx:0 Dur:1000 Start:0 0-1000
+d1-s0 Idx:1 Dur:1000 Start:0 0-1000
+d1-s0 Idx:2 Dur:1000 Start:0 0-1000
+d1-s0 Idx:3 Dur:1000 Start:0 0-1000
+d1-s0 Idx:4 Dur:1000 Start:0 0-1000
+d1-s0 Idx:5 Dur:1000 Start:0 0-1000
+d1-s0 Idx:6 Dur:1000 Start:0 0-1000
+d1-s0 Idx:7 Dur:1000 Start:0 0-1000
 s0-d0 Idx:0 Dur:1000 Start:0 0-1000
 s0-d0 Idx:1 Dur:1000 Start:0 0-1000
 s0-d0 Idx:2 Dur:1000 Start:0 0-1000
@@ -48,3 +64,19 @@ s1-s0 Idx:4 Dur:1000 Start:0 0-1000
 s1-s0 Idx:5 Dur:1000 Start:0 0-1000
 s1-s0 Idx:6 Dur:1000 Start:0 0-1000
 s1-s0 Idx:7 Dur:1000 Start:0 0-1.144 1.144-12 13.144-188 201.144-12 213.144-488 701.144-12 713.144-286.856
+d2-s1 Idx:0 Dur:1000 Start:0 0-1000
+d2-s1 Idx:1 Dur:1000 Start:0 0-1000
+d2-s1 Idx:2 Dur:1000 Start:0 0-1000
+d2-s1 Idx:3 Dur:1000 Start:0 0-1000
+d2-s1 Idx:4 Dur:1000 Start:0 0-1000
+d2-s1 Idx:5 Dur:1000 Start:0 0-1000
+d2-s1 Idx:6 Dur:1000 Start:0 0-1000
+d2-s1 Idx:7 Dur:1000 Start:0 0-1000
+d3-s1 Idx:0 Dur:1000 Start:0 0-1000
+d3-s1 Idx:1 Dur:1000 Start:0 0-1000
+d3-s1 Idx:2 Dur:1000 Start:0 0-1000
+d3-s1 Idx:3 Dur:1000 Start:0 0-1000
+d3-s1 Idx:4 Dur:1000 Start:0 0-1000
+d3-s1 Idx:5 Dur:1000 Start:0 0-1000
+d3-s1 Idx:6 Dur:1000 Start:0 0-1000
+d3-s1 Idx:7 Dur:1000 Start:0 0-120 120-80 200-120 320-380 700-120 820-180
