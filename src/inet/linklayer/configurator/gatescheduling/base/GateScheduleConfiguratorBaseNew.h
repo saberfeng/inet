@@ -171,8 +171,12 @@ class INET_API GateScheduleConfiguratorBaseNew : public NetworkConfiguratorBase
         class INET_API Slot
         {
           public:
+            Slot(){}
+            Slot(simtime_t start, simtime_t duration, bool open):
+                 start(start),duration(duration),open(open){}
             simtime_t start; // start time in seconds
             simtime_t duration; // duration in seconds
+            bool open;
         };
 
         // a gate scheduling for a specific (traffic class) of a specific port

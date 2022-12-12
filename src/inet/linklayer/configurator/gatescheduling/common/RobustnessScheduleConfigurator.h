@@ -22,15 +22,15 @@ using std::stringstream;
 
 class INET_API RobustnessScheduleConfigurator: public GateScheduleConfiguratorBaseNew{
 protected:
-    class OperationSlot{ // slot with operation
-        public:
-            OperationSlot(simtime_t start, simtime_t duration, bool open):
-                start(start),duration(duration),open(open){}
-            simtime_t start; // start time in seconds
-            simtime_t duration; // duration in seconds
-            bool open; // operation is open or close
-    };
-    using OneGateSlots = vector<OperationSlot>;
+//    class OperationSlot{ // slot with operation
+//        public:
+//            OperationSlot(simtime_t start, simtime_t duration, bool open):
+//                start(start),duration(duration),open(open){}
+//            simtime_t start; // start time in seconds
+//            simtime_t duration; // duration in seconds
+//            bool open; // operation is open or close
+//    };
+    using OneGateSlots = vector<Output::Slot>;
     class PortSchedule{
         public:
             PortSchedule(int gates_num):slots(gates_num){}

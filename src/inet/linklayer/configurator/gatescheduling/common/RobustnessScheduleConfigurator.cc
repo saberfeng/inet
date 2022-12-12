@@ -92,15 +92,15 @@ void RobustnessScheduleConfigurator::addSchedule(
         OneGateSlots& gate_slots = port_schedule->slots[gateIndex];
 
         // merge adjacent slots
-        vector<OperationSlot> merged_slots;
+        vector<Output::Slot> merged_slots;
         for(int i=0; i < gate_slots.size(); i++){
             if(merged_slots.empty()){
                 merged_slots.push_back(gate_slots[i]);
                 continue;
             }
 
-            OperationSlot& cur_slot = gate_slots[i];
-            OperationSlot& last_merged = merged_slots[merged_slots.size()-1];
+            Output::Slot& cur_slot = gate_slots[i];
+            Output::Slot& last_merged = merged_slots[merged_slots.size()-1];
             if(cur_slot.open == last_merged.open){
                 // same operation, should merge
                 last_merged.duration += cur_slot.duration;
@@ -180,8 +180,8 @@ RobustnessScheduleConfigurator::ScheduleMap RobustnessScheduleConfigurator::pars
             simtime_t duration = str_us_to_s(slot_components[3]);
             for(int gate_idx=0; gate_idx<raw_operations.size(); gate_idx++){
                 bool gate_open = stoi(raw_operations.substr(gate_idx,1));
-                OperationSlot oper_slot(start, duration, gate_open);
-                port_schedule->slots[gate_idx].push_back(oper_slot);
+                Output::Slot slot(start, duration, gate_open);
+                port_schedule->slots[gate_idx].push_back(slot);
             }
             start += duration;
         }
