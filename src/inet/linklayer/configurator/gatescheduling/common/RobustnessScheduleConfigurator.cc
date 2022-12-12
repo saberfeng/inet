@@ -120,7 +120,7 @@ void RobustnessScheduleConfigurator::addSchedule(
                 first_open_start = merged_slots[i].start;
             }
         }
-        // TODO: now INET can not handle always close slot
+
         if(first_open_start == -1){
             // if no open operation, i.e., always close, we set always open now
             first_open_start = 0;

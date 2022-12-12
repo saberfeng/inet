@@ -1,7 +1,7 @@
 #ifndef __INET_ROBUSTNESSSCHEDULECONFIGURATOR_H
 #define __INET_ROBUSTNESSSCHEDULECONFIGURATOR_H
 
-#include "inet/linklayer/configurator/gatescheduling/base/GateScheduleConfiguratorBase.h"
+#include "inet/linklayer/configurator/gatescheduling/base/GateScheduleConfiguratorBaseNew.h"
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -20,7 +20,7 @@ using std::stoi;
 using std::stringstream;
 
 
-class INET_API RobustnessScheduleConfigurator: public GateScheduleConfiguratorBase{
+class INET_API RobustnessScheduleConfigurator: public GateScheduleConfiguratorBaseNew{
 protected:
     class OperationSlot{ // slot with operation
         public:

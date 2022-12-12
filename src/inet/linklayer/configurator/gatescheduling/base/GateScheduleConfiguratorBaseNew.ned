@@ -13,15 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package inet.linklayer.configurator.gatescheduling.common;
+package inet.linklayer.configurator.gatescheduling.base;
 
-import inet.linklayer.configurator.gatescheduling.base.GateScheduleConfiguratorBaseNew;
-import inet.linklayer.configurator.gatescheduling.contract.IGateScheduleConfigurator;
-
-simple RobustnessScheduleConfigurator extends GateScheduleConfiguratorBaseNew like IGateScheduleConfigurator
+simple GateScheduleConfiguratorBaseNew
 {
     parameters:
-        string schedule_path = default(""); // the input file path
-        string output_schedule_path = default(""); // the output log file path
-        @class(RobustnessScheduleConfigurator);
+        double gateCycleDuration @unit(s); // the globally used gate scheduling period in each PeriodicGate modules
+        object configuration @mutable = default([]); // a vector of objects (e.g. [{...}, {...}]), see above
+                                                     // here is an example: [{name: "s1", type: "unicast", application: "app[0]", pcp: 0, gateIndex: 0, source: "wheel*", destination: "hud", packetLength: 100B, packetInterval: 5ms, maxLatency: 100us, maxJitter: 10us}]
+        @display("i=block/cogwheel");
 }
