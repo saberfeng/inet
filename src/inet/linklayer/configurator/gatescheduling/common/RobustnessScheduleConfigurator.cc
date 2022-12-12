@@ -89,6 +89,7 @@ void RobustnessScheduleConfigurator::addSchedule(
         schedule->port = port;
         schedule->gateIndex = gateIndex;
         schedule->cycleDuration = port_schedule->gating_cycle;
+        schedule->cycleStart = 0; // now always start from 0
         OneGateSlots& gate_slots = port_schedule->slots[gateIndex];
 
         // merge adjacent slots
@@ -108,25 +109,7 @@ void RobustnessScheduleConfigurator::addSchedule(
                 merged_slots.push_back(cur_slot);
             }
         }
-
-        simtime_t first_open_start = -1;
-        for(int i=0; i < merged_slots.size(); i++){
-            Output::Slot slot;
-            slot.start = merged_slots[i].start;
-            slot.duration = merged_slots[i].duration;
-            schedule->slots.push_back(slot);
-
-            if(first_open_start==-1 && merged_slots[i].open == true){
-                first_open_start = merged_slots[i].start;
-            }
-        }
-
-        if(first_open_start == -1){
-            // if no open operation, i.e., always close, we set always open now
-            first_open_start = 0;
-        }
-
-        schedule->cycleStart = first_open_start;
+        schedule->slots = merged_slots;
         output->gateSchedules[port].push_back(schedule);
     }
 }
@@ -142,6 +125,7 @@ void RobustnessScheduleConfigurator::addEmptySchedule(
         Output::Slot slot;
         slot.start = 0;
         slot.duration = gateCycleDuration;
+        slot.open = true;
         schedule->slots.push_back(slot);
         output->gateSchedules[port].push_back(schedule);
     }

@@ -265,12 +265,12 @@ void GateScheduleConfiguratorBaseNew::configureGateScheduling(cModule *networkNo
     auto port = gateSchedulingInput->getPort(networkInterface);
 
     // ----------- debug ----------------
-    string startNode = port->startNode->module->getFullName(); // "d0"
-    string endNode = port->endNode->module->getFullName(); // "s0"
-    string port_id = startNode + "-" + endNode;
-    if ((port_id == string("s0-d0")) && (gateIndex == 7)){
-        port_id += "!";
-    }
+//    string startNode = port->startNode->module->getFullName(); // "d0"
+//    string endNode = port->endNode->module->getFullName(); // "s0"
+//    string port_id = startNode + "-" + endNode;
+//    if ((port_id == string("s0-d0")) && (gateIndex == 7)){
+//        port_id += "!";
+//    }
 
     auto it = gateSchedulingOutput->gateSchedules.find(port);
     if (it == gateSchedulingOutput->gateSchedules.end())
@@ -279,32 +279,21 @@ void GateScheduleConfiguratorBaseNew::configureGateScheduling(cModule *networkNo
     if (gateIndex >= schedules.size())
         throw cRuntimeError("Cannot find schedule for traffic class, interface = %s, gate index = %d", port->module->getFullPath().c_str(), gateIndex);
     auto schedule = schedules[gateIndex];
+
     cValueArray *durations = new cValueArray();
-    for (auto& slot : schedule->slots) {
-        simtime_t slotStart = slot.start;
-        simtime_t slotDuration = slot.duration;
-        if (slotStart < 0 || slotStart + slotDuration > gateCycleDuration)
-            throw cRuntimeError("Invalid slot start and/or duration");
-        if (slotStart == 0)
-            initiallyOpen = true;
-        else {
-            simtime_t duration = slotStart - slotEnd;
-            ASSERT(duration >= 0);
-            durations->add(cValue(duration.dbl(), "s"));
-        }
-        durations->add(cValue(slotDuration.dbl(), "s"));
-        slotEnd = slotStart + slotDuration;
+    for(auto& slot: schedule->slots){
+        durations->add(cValue(slot.duration.dbl(), "s"));
     }
-    simtime_t remainingDuration = schedule->cycleDuration - slotEnd;
-    if (slotEnd != 0) {
-        if (remainingDuration != 0)
-            durations->add(cValue(remainingDuration.dbl(), "s"));
-        if (durations->size() % 2 != 0)
-            durations->add(cValue(0, "s"));
+    if (durations->size() % 2 != 0){
+        // if num of durations is not even, add one empty slot
+        durations->add(cValue(0, "s"));
     }
-    EV_DEBUG << "Configuring gate scheduling parameters" << EV_FIELD(networkNode) << EV_FIELD(networkInterface) << EV_FIELD(gate) << EV_FIELD(initiallyOpen) << EV_FIELD(offset) << EV_FIELD(durations) << EV_ENDL;
-    gate->par("initiallyOpen") = initiallyOpen;
-    gate->par("offset") = offset.dbl();
+
+    gate->par("initiallyOpen") = schedule->slots[0].open;
+    gate->par("offset") = schedule->cycleStart.dbl();
+
+    EV_DEBUG << "Configuring gate scheduling parameters" << EV_FIELD(networkNode) << EV_FIELD(networkInterface) << EV_FIELD(gate) << EV_FIELD(schedule->slots[0].open) << EV_FIELD(schedule->cycleStart.dbl()) << EV_FIELD(durations) << EV_ENDL;
+
     cPar& durationsPar = gate->par("durations");
     durationsPar.copyIfShared();
     durationsPar.setObjectValue(durations);
