@@ -24,4 +24,12 @@ simtime_t str_us_to_s(std::string& str_us_time){
 simtime_t us_to_s(double us_time){
     return us_time / double(1e6);
 }
+
+simtime_t str_ns_to_s(string& str_ns_time){
+    return ns_to_s(std::stod(str_ns_time));
+}
+
+simtime_t ns_to_s(double ns_time){
+    return ns_time / double(1e9);
+}
 }

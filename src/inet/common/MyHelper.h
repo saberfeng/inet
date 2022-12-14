@@ -17,6 +17,10 @@ vector<string> splitString(string txt, string delimiter);
 simtime_t str_us_to_s(string& str_us_time);
 
 simtime_t us_to_s(double us_time);
+
+simtime_t str_ns_to_s(string& str_ns_time);
+
+simtime_t ns_to_s(double ns_time);
 }
 
 
