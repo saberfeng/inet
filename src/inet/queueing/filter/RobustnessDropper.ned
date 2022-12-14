@@ -21,11 +21,11 @@ import inet.queueing.contract.IPacketFilter;
 //
 // This module drops packets based on the GCL: dropping packets when the gate is closed
 //
-simple GCLBasedDropper extends PacketFilterBase like IPacketFilter
+simple RobustnessDropper extends PacketFilterBase like IPacketFilter
 {
     parameters:
-        string durationsVector = default(""); // the dropsVector format is "<packetNumber>;<packetNumber>;...;"
-                                          // packet numbers in ascending order e.g. "5;6;12;13;" 
-                                          // corresponding to actions               "open;close;open;close;"
-        @class(GCLBasedDropper);
+        int hypercycle = default(nan); // hypercycle in ns 
+        string ingressWindows = default(""); // windows in ns, example: "201000-322000 701000-822000"
+        string globalSafeIntervals = default(""); // intervals in ns, example: "134000-321000 321000-322000 322000-821000"
+        @class(RobustnessDropper);
 }
