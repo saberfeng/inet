@@ -31,12 +31,15 @@ class INET_API GlobalSafeConfigurator : public NetworkConfiguratorBase{
                 IngressSchedule(int hypercycle, string rawWindows):
                         hypercycle(hypercycle),rawWindows(rawWindows){}
                 int hypercycle;
+                // for ingress windows, rawWindows is like: "201000-322000 701000-822000"
+                // for global safe intervals, rawWindows: "201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
                 string rawWindows;
         };
         // key1: nodeId, key2:flowId
-        using FlowIngressMap = unordered_map<string, IngressSchedule>;
-        using NodeIngressMap = unordered_map<string, FlowIngressMap>;
-        NodeIngressMap ingressMap;
+        using FlowMap = unordered_map<string, IngressSchedule>;
+        using NodeMap = unordered_map<string, FlowMap>;
+        NodeMap ingressMap;
+        NodeMap globalSafeMap;
 
         virtual void initialize(int stage) override;
         virtual void parseGlobalSafeFile();
