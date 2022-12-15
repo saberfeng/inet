@@ -41,9 +41,14 @@ class INET_API GlobalSafeConfigurator : public NetworkConfiguratorBase{
         NodeMap ingressMap;
         NodeMap globalSafeMap;
 
+        // key1:nodeId, key2:flowId, value:filterIndex
+        unordered_map<string, unordered_map<string, int>> filterMap;
+
         virtual void initialize(int stage) override;
         virtual void parseGlobalSafeFile();
         virtual void parseIngressFile();
+        // establish mapping between flowId & filterId for each node
+        virtual void initFilterMap(); 
         /**
          * Computes the network configuration for all nodes in the network.
          * The result of the computation is only stored in the configurator.

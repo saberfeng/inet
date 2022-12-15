@@ -5,8 +5,7 @@ namespace inet{
 
 Define_Module(GlobalSafeConfigurator);
 
-void GlobalSafeConfigurator::initialize(int stage)
-{
+void GlobalSafeConfigurator::initialize(int stage){
     if (stage == INITSTAGE_LOCAL) {
         string globalSafeInputPath = par("globalSafeInput");
         string ingressInputPath = par("ingressScheduleInput");
@@ -42,6 +41,12 @@ void GlobalSafeConfigurator::parseIngressFile(){
         flowIngressMap[flowId] = IngressSchedule(hypercycle, rawWindows);
     }
     ingressInputFile.close();
+
+    initFilterMap();
+}
+
+void GlobalSafeConfigurator::initFilterMap(){
+    
 }
 
 void GlobalSafeConfigurator::parseGlobalSafeFile(){
