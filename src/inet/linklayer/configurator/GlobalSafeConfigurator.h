@@ -42,9 +42,12 @@ class INET_API GlobalSafeConfigurator : public NetworkConfiguratorBase{
         NodeMap globalSafeMap;
 
         // key1:nodeId, key2:flowId, value:filterIndex
-        unordered_map<string, unordered_map<string, int>> filterMap;
+        using FlowIdxMap = unordered_map<string, int>;
+        using NodeFilterMap = unordered_map<string, FlowIdxMap>;
+        NodeFilterMap filterMap;
 
         virtual void initialize(int stage) override;
+        virtual void prepareTopology();
         virtual void parseGlobalSafeFile();
         virtual void parseIngressFile();
         // establish mapping between flowId & filterId for each node

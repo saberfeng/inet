@@ -18,6 +18,12 @@ void GlobalSafeConfigurator::initialize(int stage){
     }
 }
 
+void GlobalSafeConfigurator::prepareTopology(){
+    delete topology;
+    topology = new Topology();
+    TIME(extractTopology(*topology));
+}
+
 void GlobalSafeConfigurator::parseIngressFile(){
     cout<<"**************" << ingressScheduleInput << endl;
     std::ifstream ingressInputFile(ingressScheduleInput);
@@ -46,8 +52,20 @@ void GlobalSafeConfigurator::parseIngressFile(){
 }
 
 void GlobalSafeConfigurator::initFilterMap(){
-    
+    for(const auto& nodeFlowSchedule : ingressMap){
+        string nodeId = nodeFlowSchedule.first;
+        if(filterMap.find(nodeId) == filterMap.end()){
+            filterMap[nodeId] = FlowIdxMap();
+        }
+        for(const auto& flowSchedule : nodeFlowSchedule.second){
+            string flowId = flowSchedule.first;
+            if(filterMap.at(nodeId).find(flowId) == filterMap.at(nodeId).end()){
+                filterMap.at(nodeId)[flowId] = filterMap.at(nodeId).size();
+            }
+        }
+    }
 }
+
 
 void GlobalSafeConfigurator::parseGlobalSafeFile(){
     cout<<"**************" << globalSafeInput << endl;
