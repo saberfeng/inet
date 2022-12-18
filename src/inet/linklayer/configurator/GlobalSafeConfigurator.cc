@@ -7,21 +7,23 @@ Define_Module(GlobalSafeConfigurator);
 
 void GlobalSafeConfigurator::initialize(int stage){
     if (stage == INITSTAGE_LOCAL) {
-        string globalSafeInputPath = par("globalSafeInput");
-        string ingressInputPath = par("ingressScheduleInput");
-        globalSafeInput = globalSafeInputPath;
-        ingressScheduleInput = ingressInputPath;
+//        string globalSafeInputPath = par("globalSafeInput");
+//        string ingressInputPath = par("ingressScheduleInput");
+//        globalSafeInput = globalSafeInputPath;
+//        ingressScheduleInput = ingressInputPath;
     }
     if (stage == INITSTAGE_QUEUEING) {
-        parseIngressFile();
-        parseGlobalSafeFile();
+//        parseIngressFile();
+//        parseGlobalSafeFile();
+//        prepareTopology();
+//        configureFilterMap();
     }
 }
 
 void GlobalSafeConfigurator::prepareTopology(){
     delete topology;
     topology = new Topology();
-    TIME(extractTopology(*topology));
+    extractTopology(*topology);
 }
 
 void GlobalSafeConfigurator::parseIngressFile(){
@@ -63,6 +65,15 @@ void GlobalSafeConfigurator::initFilterMap(){
                 filterMap.at(nodeId)[flowId] = filterMap.at(nodeId).size();
             }
         }
+    }
+}
+
+void GlobalSafeConfigurator::configureFilterMap(){
+    for (int i = 0; i < topology->getNumNodes(); i++) {
+        auto node = (Node *)topology->getNode(i);
+        cModule *nodeModule = node->module;
+        string nodeName = nodeModule->getFullName();
+        cout << "*****" << nodeName << endl;
     }
 }
 

@@ -27,7 +27,7 @@ network TsnNetworkBase extends WiredNetworkBase
         failureProtectionConfigurator: <default("")> like INetworkConfigurator if typename != "" {
             @display("p=100,700;is=s");
         }
-        globalSafeConfigurator: <default("")> like INetworkConfigurator if typename != "" {
+        globalSafeConfigurator: <default("GlobalSafeConfigurator")> like IGateScheduleConfigurator if typename != "" {
             @display("p=100,800;is=s");
         }
 }

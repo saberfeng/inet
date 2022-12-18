@@ -1,8 +1,8 @@
 package inet.linklayer.configurator;
 
-import inet.networklayer.configurator.contract.INetworkConfigurator;
+import inet.linklayer.configurator.gatescheduling.contract.IGateScheduleConfigurator;
 
-simple GlobalSafeConfigurator like INetworkConfigurator
+simple GlobalSafeConfigurator like IGateScheduleConfigurator
 {
     parameters:
         string globalSafeInput = default(""); // the input file path
