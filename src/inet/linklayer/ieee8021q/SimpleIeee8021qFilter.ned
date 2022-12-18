@@ -38,7 +38,7 @@ module SimpleIeee8021qFilter like IPacketFilter
         gate[numStreams]: <default("InteractiveGate")> like IPacketGate {
             @display("p=300,$startY,column,150");
         }
-        meter[numStreams]: <default("DualRateThreeColorMeter")> like IPacketMeter {
+        meter[numStreams]: <default("")> like IPacketMeter {
             @display("p=500,$startY,column,150");
         }
         filter[numStreams]: <default("LabelFilter")> like IPacketFilter {

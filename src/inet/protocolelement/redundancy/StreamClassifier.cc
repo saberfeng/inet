@@ -24,6 +24,14 @@ void StreamClassifier::initialize(int stage)
     }
 }
 
+void StreamClassifier::handleParameterChange(const char *name){
+    if (name != nullptr) {
+        if (!strcmp(name, "mapping")) {
+            mapping = check_and_cast<cValueMap *>(par("mapping").objectValue());
+        }
+    }
+}
+
 int StreamClassifier::classifyPacket(Packet *packet)
 {
     const char *streamName = nullptr;
@@ -52,6 +60,20 @@ int StreamClassifier::classifyPacket(Packet *packet)
             break;
         }
     }
+
+    cout <<"********streamName:" <<streamName << endl;
+    auto streamReq = packet->findTag<StreamReq>();
+    if (streamReq != nullptr)
+        cout << "******streamReq:" << streamReq->getStreamName() << endl; //no print
+    auto streamInd = packet->findTag<StreamInd>();
+    if (streamInd != nullptr)
+        cout << "******streamInd:" << streamInd->getStreamName() << endl;
+    cout << "******getDisplayString:" <<packet->getDisplayString() << endl;
+    cout << "******str:" <<packet->str() << endl;
+    cout << "******getFullName:" << packet->getFullName() << endl << endl; // "best effort-0"
+
+
+
     if (streamName != nullptr && mapping->containsKey(streamName)) {
         int outputGateIndex = mapping->get(streamName).intValue() + gateIndexOffset;
         if (consumers[outputGateIndex]->canPushPacket(packet, outputGates[outputGateIndex]->getPathEndGate()))

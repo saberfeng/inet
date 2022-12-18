@@ -9,8 +9,12 @@
 #define __INET_STREAMCLASSIFIER_H
 
 #include "inet/queueing/base/PacketClassifierBase.h"
+#include <iostream>
 
 namespace inet {
+
+using std::cout;
+using std::endl;
 
 class INET_API StreamClassifier : public queueing::PacketClassifierBase
 {
@@ -23,6 +27,7 @@ class INET_API StreamClassifier : public queueing::PacketClassifierBase
   protected:
     virtual void initialize(int stage) override;
     virtual int classifyPacket(Packet *packet) override;
+    virtual void handleParameterChange(const char *name) override;
 };
 
 } // namespace inet

@@ -3,6 +3,7 @@
 
 #include "inet/networklayer/configurator/base/NetworkConfiguratorBase.h"
 #include "inet/common/MyHelper.h"
+#include "inet/protocolelement/redundancy/StreamClassifier.h"
 #include <string>
 #include <iostream>
 #include <fstream>

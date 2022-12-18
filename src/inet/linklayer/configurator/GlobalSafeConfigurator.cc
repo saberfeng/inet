@@ -7,15 +7,15 @@ Define_Module(GlobalSafeConfigurator);
 
 void GlobalSafeConfigurator::initialize(int stage){
     if (stage == INITSTAGE_LOCAL) {
-//        string globalSafeInputPath = par("globalSafeInput");
-//        string ingressInputPath = par("ingressScheduleInput");
-//        globalSafeInput = globalSafeInputPath;
-//        ingressScheduleInput = ingressInputPath;
+        string globalSafeInputPath = par("globalSafeInput");
+        string ingressInputPath = par("ingressScheduleInput");
+        globalSafeInput = globalSafeInputPath;
+        ingressScheduleInput = ingressInputPath;
     }
     if (stage == INITSTAGE_QUEUEING) {
-//        parseIngressFile();
-//        parseGlobalSafeFile();
-//        prepareTopology();
+        parseIngressFile();
+        parseGlobalSafeFile();
+        prepareTopology();
 //        configureFilterMap();
     }
 }
@@ -27,24 +27,23 @@ void GlobalSafeConfigurator::prepareTopology(){
 }
 
 void GlobalSafeConfigurator::parseIngressFile(){
-    cout<<"**************" << ingressScheduleInput << endl;
     std::ifstream ingressInputFile(ingressScheduleInput);
     string line;
     getline(ingressInputFile, line); // skip the first header line
     while(getline(ingressInputFile, line)){
         if(line == string("")){
             continue;
-        } 
+        }
         vector<string> components = splitString(line, string(","));
         string nodeId = components[0];
         string flowId = components[1];
         int hypercycle = stoi(components[2]);
-        string rawWindows = components[4];
+        string rawWindows = components[3];
 
         if(ingressMap.find(nodeId) == ingressMap.end()){ // key nodeId not exist
             ingressMap[nodeId] = FlowMap();
         }
-        auto flowIngressMap = ingressMap.at(nodeId);
+        FlowMap& flowIngressMap = ingressMap.at(nodeId);
         assert(flowIngressMap.find(flowId) == flowIngressMap.end());
         flowIngressMap[flowId] = IngressSchedule(hypercycle, rawWindows);
     }
@@ -73,13 +72,27 @@ void GlobalSafeConfigurator::configureFilterMap(){
         auto node = (Node *)topology->getNode(i);
         cModule *nodeModule = node->module;
         string nodeName = nodeModule->getFullName();
-        cout << "*****" << nodeName << endl;
+        if(filterMap.find(nodeName) != filterMap.end()){// if we have ingress schedule for this node
+            cModule* ieee8021qFilter = nodeModule->findModuleByPath(".bridging.streamFilter.ingress");
+//            ieee8021qFilter->par("numStreams") = filterMap.at(nodeName).size();
+
+            cModule* tmpClassifier = ieee8021qFilter->findModuleByPath(".classifier");
+            StreamClassifier* classifier = dynamic_cast<StreamClassifier *>(tmpClassifier);
+            assert(classifier != nullptr); // make sure the dynamic cast is successful
+
+            cValueMap* mapping = new cValueMap();
+            for(const auto& flowIdxMap : filterMap.at(nodeName)){
+                mapping->set(flowIdxMap.first.c_str(), flowIdxMap.second);
+            }
+            classifier->par("mapping") =mapping;
+//            parMapping.copyIfShared();
+//            parMapping.setObjectValue(mapping);
+        }
     }
 }
 
 
 void GlobalSafeConfigurator::parseGlobalSafeFile(){
-    cout<<"**************" << globalSafeInput << endl;
     std::ifstream globalSafeInputFile(globalSafeInput);
     string line;
     getline(globalSafeInputFile, line); // skip the 
@@ -91,12 +104,12 @@ void GlobalSafeConfigurator::parseGlobalSafeFile(){
         string nodeId = components[0];
         string flowId = components[1];
         int hypercycle = stoi(components[2]);
-        string rawIntervals = components[4];
+        string rawIntervals = components[3];
         
         if(globalSafeMap.find(nodeId) == globalSafeMap.end()){ // key nodeId not exist
             globalSafeMap[nodeId] = FlowMap();
         }
-        auto flowIntervalMap = globalSafeMap.at(nodeId);
+        FlowMap& flowIntervalMap = globalSafeMap.at(nodeId);
         if(flowIntervalMap.find(flowId) == flowIntervalMap.end()){ // key flowId not exist
             flowIntervalMap[flowId] = IngressSchedule(hypercycle, rawIntervals);
         } else {
