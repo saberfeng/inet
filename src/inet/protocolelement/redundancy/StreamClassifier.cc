@@ -34,48 +34,13 @@ void StreamClassifier::handleParameterChange(const char *name){
 
 int StreamClassifier::classifyPacket(Packet *packet)
 {
-    const char *streamName = nullptr;
-    switch (*mode) {
-        case 'r': {
-            auto streamReq = packet->findTag<StreamReq>();
-            if (streamReq != nullptr)
-                streamName = streamReq->getStreamName();
-            break;
-        }
-        case 'i': {
-            auto streamInd = packet->findTag<StreamInd>();
-            if (streamInd != nullptr)
-                streamName = streamInd->getStreamName();
-            break;
-        }
-        case 'b': {
-            auto streamReq = packet->findTag<StreamReq>();
-            if (streamReq != nullptr)
-                streamName = streamReq->getStreamName();
-            else {
-                auto streamInd = packet->findTag<StreamInd>();
-                if (streamInd != nullptr)
-                    streamName = streamInd->getStreamName();
-            }
-            break;
-        }
-    }
+    string packetName = packet->getFullName(); // "best effort-0" "d3-FG1-0"
+    string flowNameStr = splitString(packetName, "-")[1];
+    assert(flowNameStr.substr(0,2) == string("FG"));
+    const char* flowName = flowNameStr.c_str();
 
-    cout <<"********streamName:" <<streamName << endl;
-    auto streamReq = packet->findTag<StreamReq>();
-    if (streamReq != nullptr)
-        cout << "******streamReq:" << streamReq->getStreamName() << endl; //no print
-    auto streamInd = packet->findTag<StreamInd>();
-    if (streamInd != nullptr)
-        cout << "******streamInd:" << streamInd->getStreamName() << endl;
-    cout << "******getDisplayString:" <<packet->getDisplayString() << endl;
-    cout << "******str:" <<packet->str() << endl;
-    cout << "******getFullName:" << packet->getFullName() << endl << endl; // "best effort-0"
-
-
-
-    if (streamName != nullptr && mapping->containsKey(streamName)) {
-        int outputGateIndex = mapping->get(streamName).intValue() + gateIndexOffset;
+    if (mapping->containsKey(flowName)) {
+        int outputGateIndex = mapping->get(flowName).intValue() + gateIndexOffset;
         if (consumers[outputGateIndex]->canPushPacket(packet, outputGates[outputGateIndex]->getPathEndGate()))
             return outputGateIndex;
     }

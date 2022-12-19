@@ -9,12 +9,15 @@
 #define __INET_STREAMCLASSIFIER_H
 
 #include "inet/queueing/base/PacketClassifierBase.h"
+#include "inet/common/MyHelper.h"
 #include <iostream>
+#include <string>
 
 namespace inet {
 
 using std::cout;
 using std::endl;
+using std::string;
 
 class INET_API StreamClassifier : public queueing::PacketClassifierBase
 {
