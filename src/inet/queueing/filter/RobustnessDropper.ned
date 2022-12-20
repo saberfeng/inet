@@ -24,8 +24,8 @@ import inet.queueing.contract.IPacketFilter;
 simple RobustnessDropper extends PacketFilterBase like IPacketFilter
 {
     parameters:
-        int hypercycle = default(nan); // hypercycle in ns 
-        string ingressWindows = default(""); // windows in ns, example: "201000-322000 701000-822000"
-        string globalSafeIntervals = default(""); // intervals in ns, example: "134000-321000 321000-322000 322000-821000"
+        int hypercycle @mutable = default(0); // hypercycle in ns 
+        string ingressWindows @mutable = default(""); // windows in ns, example: "201000-322000 701000-822000"
+        string globalSafeIntervals @mutable = default(""); // intervals in ns, example: "134000-321000 321000-322000 322000-821000"
         @class(RobustnessDropper);
 }

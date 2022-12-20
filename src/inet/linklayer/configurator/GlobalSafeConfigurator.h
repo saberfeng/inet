@@ -4,6 +4,7 @@
 #include "inet/networklayer/configurator/base/NetworkConfiguratorBase.h"
 #include "inet/common/MyHelper.h"
 #include "inet/protocolelement/redundancy/StreamClassifier.h"
+#include "inet/queueing/filter/RobustnessDropper.h"
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -47,13 +48,19 @@ class INET_API GlobalSafeConfigurator : public NetworkConfiguratorBase{
         using NodeFilterMap = unordered_map<string, FlowIdxMap>;
         NodeFilterMap filterMap;
 
+        using FlowIdxRevMap = unordered_map<int, string>;
+        using NodeFilterRevMap = unordered_map<string, FlowIdxRevMap>;
+        NodeFilterRevMap filterRevMap; // just reversed filterMap, use filterIdx as key, flowId as value
+
         virtual void initialize(int stage) override;
         virtual void prepareTopology();
         virtual void parseGlobalSafeFile();
         virtual void parseIngressFile();
         // establish mapping between flowId & filterId for each node
         virtual void initFilterMap(); 
+        virtual void initFilterRevMap();
         virtual void configureFilterMap();
+        virtual void configureIngressSchedule();
         /**
          * Computes the network configuration for all nodes in the network.
          * The result of the computation is only stored in the configurator.

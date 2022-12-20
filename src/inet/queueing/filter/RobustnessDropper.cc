@@ -35,7 +35,7 @@ void RobustnessDropper::initialize(int stage)
 }
 
 void RobustnessDropper::parseHypercycle(){
-    hypercycle = stoll(par("hypercycle")); // in ns
+    hypercycle = par("hypercycle"); // in ns
 }
 
 void RobustnessDropper::handleParameterChange(const char *name)
@@ -58,16 +58,24 @@ void RobustnessDropper::handleParameterChange(const char *name)
 void RobustnessDropper::parseIngressWindows(){
     vector<string> rawWindows = splitString(rawIngressWindows, string(" "));
     for(auto& rawWindow : rawWindows){
+        if(rawWindow.empty()){
+            continue;
+        }
         vector<string> start_end = splitString(rawWindow, string("-"));
+        assert(start_end.size() == 2);
         ingressWindows.push_back(
             Window(stoll(start_end[0]), stoll(start_end[1])));
     }
 }
 
 void RobustnessDropper::parseGlobalSafe(){
-    vector<string> rawIntervalss = splitString(rawGlobalSafeIntervals, string(" "));
-    for(auto& rawInterval : rawIntervalss){
+    vector<string> rawIntervals = splitString(rawGlobalSafeIntervals, string(" "));
+    for(auto& rawInterval : rawIntervals){
+        if(rawInterval.empty()){
+            continue;
+        }
         vector<string> start_end = splitString(rawInterval, string("-"));
+        assert(start_end.size() == 2);
         globalSafeIntervals.push_back(
             Window(stoll(start_end[0]), stoll(start_end[1])));
     }

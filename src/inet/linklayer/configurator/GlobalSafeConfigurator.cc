@@ -16,7 +16,8 @@ void GlobalSafeConfigurator::initialize(int stage){
         parseIngressFile();
         parseGlobalSafeFile();
         prepareTopology();
-//        configureFilterMap();
+        configureFilterMap();
+        configureIngressSchedule();
     }
 }
 
@@ -50,6 +51,7 @@ void GlobalSafeConfigurator::parseIngressFile(){
     ingressInputFile.close();
 
     initFilterMap();
+    initFilterRevMap();
 }
 
 void GlobalSafeConfigurator::initFilterMap(){
@@ -67,6 +69,19 @@ void GlobalSafeConfigurator::initFilterMap(){
     }
 }
 
+void GlobalSafeConfigurator::initFilterRevMap(){
+    // for a node, filter and flow are 1-to-1
+    for(const auto& nodeFilterPair: filterMap){
+        string nodeId = nodeFilterPair.first;
+        filterRevMap[nodeId] = FlowIdxRevMap();
+        for(const auto& flowFilterPair: nodeFilterPair.second){
+            string flowId = flowFilterPair.first;
+            int filterIdx = flowFilterPair.second;
+            filterRevMap[nodeId][filterIdx] = flowId;
+        }
+    }
+}
+
 void GlobalSafeConfigurator::configureFilterMap(){
     for (int i = 0; i < topology->getNumNodes(); i++) {
         auto node = (Node *)topology->getNode(i);
@@ -74,7 +89,7 @@ void GlobalSafeConfigurator::configureFilterMap(){
         string nodeName = nodeModule->getFullName();
         if(filterMap.find(nodeName) != filterMap.end()){// if we have ingress schedule for this node
             cModule* ieee8021qFilter = nodeModule->findModuleByPath(".bridging.streamFilter.ingress");
-//            ieee8021qFilter->par("numStreams") = filterMap.at(nodeName).size();
+            // ieee8021qFilter->par("numStreams") = filterMap.at(nodeName).size();
 
             cModule* tmpClassifier = ieee8021qFilter->findModuleByPath(".classifier");
             StreamClassifier* classifier = dynamic_cast<StreamClassifier *>(tmpClassifier);
@@ -85,8 +100,33 @@ void GlobalSafeConfigurator::configureFilterMap(){
                 mapping->set(flowIdxMap.first.c_str(), flowIdxMap.second);
             }
             classifier->par("mapping") =mapping;
-//            parMapping.copyIfShared();
-//            parMapping.setObjectValue(mapping);
+        }
+    }
+}
+
+void GlobalSafeConfigurator::configureIngressSchedule(){
+    for (int i = 0; i < topology->getNumNodes(); i++) {
+        auto node = (Node *)topology->getNode(i);
+        cModule *nodeModule = node->module;
+        string nodeName = nodeModule->getFullName();
+        if(ingressMap.find(nodeName) == ingressMap.end()){// skip nodes with no ingress schedules
+            continue;
+        }
+        cModule* ieee8021qFilter = nodeModule->findModuleByPath(".bridging.streamFilter.ingress");
+        assert(ieee8021qFilter != nullptr);
+        for (cModule::SubmoduleIterator it(ieee8021qFilter); !it.end(); ++it) { // iterate through all submodules of ieee8021qFilter
+            cModule *filter = *it;
+            if (dynamic_cast<queueing::RobustnessDropper *>(filter) == nullptr){
+                continue;
+            }
+
+            int filterIndex = filter->getIndex();
+            assert(filterRevMap.find(nodeName) != filterRevMap.end());
+            assert(filterRevMap.at(nodeName).find(filterIndex) != filterRevMap.at(nodeName).end());
+            string& flowId = filterRevMap.at(nodeName).at(filterIndex);
+            IngressSchedule& ingressSched = ingressMap.at(nodeName).at(flowId);
+            filter->par("hypercycle") = ingressSched.hypercycle;
+            filter->par("ingressWindows") = ingressSched.rawWindows;
         }
     }
 }
