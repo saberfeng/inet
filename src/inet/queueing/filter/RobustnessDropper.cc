@@ -23,6 +23,8 @@ void RobustnessDropper::initialize(int stage)
 {
     PacketFilterBase::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
+        numPackets = 0;
+        numDropped = 0;
         parseHypercycle();
         string tmp1 = par("ingressWindows");
         rawIngressWindows = tmp1;
@@ -112,16 +114,21 @@ bool RobustnessDropper::checkTimeInAnyWindow(long long time_ns, vector<Window> w
 
 void RobustnessDropper::dropPacket(Packet *packet)
 {
-    // EV_DEBUG << "Dropping packet" << EV_FIELD(ordinalNumber, numPackets) << EV_FIELD(packet) << EV_ENDL;
-    // numPackets++;
-    // numDropped++;
+    EV_DEBUG << "Dropping packet"
+             << EV_FIELD(numDropped)
+             << EV_FIELD(packet->getFullName()) << EV_ENDL;
+    numPackets++;
+    numDropped++;
     PacketFilterBase::dropPacket(packet);
 }
 
-// void RobustnessDropper::processPacket(Packet *packet)
-// {
-//     // numPackets++;
-// }
+void RobustnessDropper::processPacket(Packet *packet)
+{
+    EV_DEBUG << "Processing packet"
+             << EV_FIELD(numPackets)
+             << EV_FIELD(packet->getFullName()) << EV_ENDL;
+    numPackets++;
+}
 
 
 }
