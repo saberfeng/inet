@@ -12,6 +12,7 @@
 #include <string>
 #include "inet/queueing/base/PacketFilterBase.h"
 #include "inet/common/MyHelper.h"
+#include <ostream>
 
 namespace inet{
 namespace queueing{
@@ -21,6 +22,8 @@ using std::string;
 using std::stod;
 using std::stoi;
 using std::stoll;
+using std::to_string;
+using std::vector;
 
 /**
  * GCL Based Dropper module
@@ -41,9 +44,13 @@ protected:
             Window(long long start, long long end):start(start),end(end){}
             long long start; // in ns
             long long end; // in ns
+            operator std::string() const
+            {
+                return to_string(start) + string("-") + to_string(end);
+            }
     };
-    std::vector<Window> ingressWindows;
-    std::vector<Window> globalSafeIntervals;
+    vector<Window> ingressWindows;
+    vector<Window> globalSafeIntervals;
 
     virtual void initialize(int stage) override;
     virtual void handleParameterChange(const char *name) override;
@@ -56,7 +63,11 @@ protected:
     virtual long long getModNow() const; // current sim time mod hypercycle (in ns)
 public:
     virtual bool matchesPacket(const Packet *packet) const override; // match->process, not match->drop
+
+    friend std::ostream& operator<<(std::ostream& os, const vector<RobustnessDropper::Window>& wins);
 };
+
+std::ostream& operator<<(std::ostream& os, const vector<RobustnessDropper::Window>& wins);
 
 }
 }

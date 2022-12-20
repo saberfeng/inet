@@ -18,6 +18,15 @@ namespace queueing {
 
 Define_Module(RobustnessDropper);
 
+std::ostream& operator<<(std::ostream& os, const vector<RobustnessDropper::Window>& wins){
+    os << "[";
+    for(const auto& win : wins){
+        os << string(win) << ",";
+    }
+    os << "]";
+    return os;
+}
+
 
 void RobustnessDropper::initialize(int stage)
 {
@@ -58,6 +67,7 @@ void RobustnessDropper::handleParameterChange(const char *name)
 }
 
 void RobustnessDropper::parseIngressWindows(){
+    ingressWindows.clear();
     vector<string> rawWindows = splitString(rawIngressWindows, string(" "));
     for(auto& rawWindow : rawWindows){
         if(rawWindow.empty()){
@@ -71,6 +81,7 @@ void RobustnessDropper::parseIngressWindows(){
 }
 
 void RobustnessDropper::parseGlobalSafe(){
+    globalSafeIntervals.clear();
     vector<string> rawIntervals = splitString(rawGlobalSafeIntervals, string(" "));
     for(auto& rawInterval : rawIntervals){
         if(rawInterval.empty()){
@@ -116,7 +127,10 @@ void RobustnessDropper::dropPacket(Packet *packet)
 {
     EV_DEBUG << "Dropping packet"
              << EV_FIELD(numDropped)
-             << EV_FIELD(packet->getFullName()) << EV_ENDL;
+             << EV_FIELD(packet->getFullName())
+             << EV_FIELD(ingressWindows)
+             << EV_FIELD(globalSafeIntervals)
+             << EV_ENDL;
     numPackets++;
     numDropped++;
     PacketFilterBase::dropPacket(packet);
@@ -126,7 +140,9 @@ void RobustnessDropper::processPacket(Packet *packet)
 {
     EV_DEBUG << "Processing packet"
              << EV_FIELD(numPackets)
-             << EV_FIELD(packet->getFullName()) << EV_ENDL;
+             << EV_FIELD(packet->getFullName())
+             << EV_FIELD(ingressWindows)
+             << EV_FIELD(globalSafeIntervals) << EV_ENDL;
     numPackets++;
 }
 
