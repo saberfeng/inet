@@ -60,7 +60,7 @@ class INET_API GlobalSafeConfigurator : public NetworkConfiguratorBase{
         virtual void initFilterMap(); 
         virtual void initFilterRevMap();
         virtual void configureFilterMap();
-        virtual void configureIngressSchedule();
+        virtual void configIngressSchedGlobalSafe();
         /**
          * Computes the network configuration for all nodes in the network.
          * The result of the computation is only stored in the configurator.

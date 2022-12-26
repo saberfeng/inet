@@ -17,7 +17,7 @@ void GlobalSafeConfigurator::initialize(int stage){
         parseGlobalSafeFile();
         prepareTopology();
         configureFilterMap();
-        configureIngressSchedule();
+        configIngressSchedGlobalSafe();
     }
 }
 
@@ -104,7 +104,7 @@ void GlobalSafeConfigurator::configureFilterMap(){
     }
 }
 
-void GlobalSafeConfigurator::configureIngressSchedule(){
+void GlobalSafeConfigurator::configIngressSchedGlobalSafe(){
     for (int i = 0; i < topology->getNumNodes(); i++) {
         auto node = (Node *)topology->getNode(i);
         cModule *nodeModule = node->module;
@@ -124,9 +124,13 @@ void GlobalSafeConfigurator::configureIngressSchedule(){
             assert(filterRevMap.find(nodeName) != filterRevMap.end());
             assert(filterRevMap.at(nodeName).find(filterIndex) != filterRevMap.at(nodeName).end());
             string& flowId = filterRevMap.at(nodeName).at(filterIndex);
+
             IngressSchedule& ingressSched = ingressMap.at(nodeName).at(flowId);
             filter->par("hypercycle") = ingressSched.hypercycle;
             filter->par("ingressWindows") = ingressSched.rawWindows;
+
+            IngressSchedule& globalSafe =globalSafeMap.at(nodeName).at(flowId);
+            filter->par("globalSafeIntervals") =globalSafe.rawWindows;
         }
     }
 }

@@ -13,6 +13,7 @@
 #include "inet/queueing/base/PacketFilterBase.h"
 #include "inet/common/MyHelper.h"
 #include <ostream>
+#include <unordered_map>
 
 namespace inet{
 namespace queueing{
@@ -24,6 +25,7 @@ using std::stoi;
 using std::stoll;
 using std::to_string;
 using std::vector;
+using std::unordered_map;
 
 /**
  * GCL Based Dropper module
@@ -32,8 +34,8 @@ class INET_API RobustnessDropper : public PacketFilterBase
 {
 protected:
     long long hypercycle; // in ns
-    string rawIngressWindows;
-    string rawGlobalSafeIntervals;
+    string rawIngressWindows; //"201000-322000 701000-822000"
+    string rawGlobalSafeIntervals; //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
 
     int numPackets;
     int numDropped;
@@ -49,8 +51,18 @@ protected:
                 return to_string(start) + string("-") + to_string(end);
             }
     };
+    class WindowKeyCompare
+    { // just used as a map key compare function
+       bool operator() (const Window& lhs, const Window& rhs) const
+       {
+           return lhs.start < rhs.start;
+       }
+    };
     vector<Window> ingressWindows;
+
+    using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;
     vector<Window> globalSafeIntervals;
+    WindowToIntervalsMap globalSafe;
 
     virtual void initialize(int stage) override;
     virtual void handleParameterChange(const char *name) override;
