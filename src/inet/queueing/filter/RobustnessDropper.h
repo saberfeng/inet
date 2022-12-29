@@ -36,6 +36,7 @@ protected:
     long long hypercycle; // in ns
     string rawIngressWindows; //"201000-322000 701000-822000"
     string rawGlobalSafeIntervals; //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
+    int curIngressWinIdx;
 
     int numPackets;
     int numDropped;
@@ -46,9 +47,11 @@ protected:
             Window(long long start, long long end):start(start),end(end){}
             long long start; // in ns
             long long end; // in ns
-            operator std::string() const
-            {
+            operator std::string() const{
                 return to_string(start) + string("-") + to_string(end);
+            }
+            bool operator==(const Window& rhs) const { 
+                return this->start == rhs.start && this->end == rhs.end;
             }
     };
     class WindowKeyCompare
@@ -61,8 +64,9 @@ protected:
     vector<Window> ingressWindows;
 
     using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;
+    using IngressIdxToIntervalMap = unordered_map<int, vector<Window>>;
     vector<Window> globalSafeIntervals;
-    WindowToIntervalsMap globalSafe;
+    IngressIdxToIntervalMap globalSafe;
 
     virtual void initialize(int stage) override;
     virtual void handleParameterChange(const char *name) override;

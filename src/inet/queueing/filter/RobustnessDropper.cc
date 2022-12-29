@@ -10,7 +10,7 @@
 #include "inet/common/ModuleAccess.h"
 #include <string>
 #include <fstream>
-
+#include <algorithm>
 
 
 namespace inet {
@@ -34,6 +34,7 @@ void RobustnessDropper::initialize(int stage)
     if (stage == INITSTAGE_LOCAL) {
         numPackets = 0;
         numDropped = 0;
+        curIngressWinIdx = 0;
         parseHypercycle();
         string tmp1 = par("ingressWindows");
         rawIngressWindows = tmp1;
@@ -82,15 +83,31 @@ void RobustnessDropper::parseIngressWindows(){
 
 void RobustnessDropper::parseGlobalSafe(){
     globalSafeIntervals.clear();
-    vector<string> rawIntervals = splitString(rawGlobalSafeIntervals, string(" "));
-    for(auto& rawInterval : rawIntervals){
-        if(rawInterval.empty()){
+    //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
+    vector<string> rawMaps = splitString(rawGlobalSafeIntervals, string(","));
+    for(auto& rawMap : rawMaps){ //rawMap->"201000-322000:121000-122000 122000-334000"
+        if(rawMap.empty()){
             continue;
         }
-        vector<string> start_end = splitString(rawInterval, string("-"));
-        assert(start_end.size() == 2);
-        globalSafeIntervals.push_back(
-            Window(stoll(start_end[0]), stoll(start_end[1])));
+        vector<string> splittedMap = splitString(rawMap, ":");
+        string ingressWin = splittedMap[0];
+        string rawIntervals = splittedMap[1];
+
+        // get corresponding ingress window index
+        vector<string> splittedInWin = splitString(ingressWin, "-");
+        auto it = std::find(ingressWindows.begin(), ingressWindows.end(), Window(
+            stoll(splittedInWin[0]), stoll(splittedInWin[1])));
+        assert(it != ingressWindows.end());
+        int idx = std::distance(ingressWindows.begin(), it);
+        globalSafe[idx] = vector<Window>();
+
+        vector<string> rawSplittedIntervals = splitString(rawIntervals, string(" "));
+        for(auto& rawInterval : rawSplittedIntervals){
+            vector<string> start_end = splitString(rawInterval, string("-"));
+            assert(start_end.size() == 2);
+            globalSafe.at(idx).push_back(
+                Window(stoll(start_end[0]), stoll(start_end[1])));
+        }
     }
 }
 
