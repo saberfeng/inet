@@ -1,0 +1,40 @@
+- something wrong in macforwarding table calculating 
+
+MacForwardingTableConfigurator
+
+calculated mactables, robustness.ini:
+[{address: "0A-AA-00-00-00-02", interface: "eth2"}, 
+{address: "0A-AA-00-00-00-09", interface: "eth0"}, 
+{address: "0A-AA-00-00-00-0A", interface: "eth1"}, 
+{address: "01-00-5E-00-00-01", interface: "eth2"}, 
+{address: "01-00-5E-00-00-01", interface: "eth0"}, 
+{address: "01-00-5E-00-00-01", interface: "eth1"}],
+
+[{address: "0A-AA-00-00-00-02", interface: "eth1"}, 
+{address: "0A-AA-00-00-00-09", interface: "eth2"}, 
+{address: "0A-AA-00-00-00-0A", interface: "eth2"}, 
+{address: "01-00-5E-00-00-01", interface: "eth0"}, 
+{address: "01-00-5E-00-00-01", interface: "eth1"}, 
+{address: "01-00-5E-00-00-01", interface: "eth2"}]
+
+all_open.ini:
+
+[{address: "0A-AA-00-00-00-02", interface: "eth2"}, 
+{address: "0A-AA-00-00-00-09", interface: "eth0"}, 
+{address: "0A-AA-00-00-00-0A", interface: "eth1"}, 
+{address: "01-00-5E-00-00-01", interface: "eth2"}, 
+{address: "01-00-5E-00-00-01", interface: "eth0"}, 
+{address: "01-00-5E-00-00-01", interface: "eth1"}]
+
+
+[{address: "0A-AA-00-00-00-02", interface: "eth1"}, 
+{address: "0A-AA-00-00-00-09", interface: "eth2"}, 
+{address: "0A-AA-00-00-00-0A", interface: "eth2"}, 
+{address: "01-00-5E-00-00-01", interface: "eth0"}, 
+{address: "01-00-5E-00-00-01", interface: "eth1"}, 
+{address: "01-00-5E-00-00-01", interface: "eth2"}]
+
+- How to generate random error, and make sure in a period, only generate one error
+
+-- add a module after trasmission selection?
+-- use signal to inform the module to generate error?
