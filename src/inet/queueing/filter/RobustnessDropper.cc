@@ -103,6 +103,9 @@ void RobustnessDropper::parseGlobalSafe(){
 
         vector<string> rawSplittedIntervals = splitString(rawIntervals, string(" "));
         for(auto& rawInterval : rawSplittedIntervals){
+            if(rawInterval.empty()){
+                continue;
+            }
             vector<string> start_end = splitString(rawInterval, string("-"));
             assert(start_end.size() == 2);
             globalSafe.at(idx).push_back(
@@ -117,9 +120,16 @@ long long RobustnessDropper::getModNow() const {
     return nsNow % hypercycle;
 }
 
+void RobustnessDropper::updateCurIdx(){
+    curIngressWinIdx = (curIngressWinIdx+1) % ingressWindows.size();
+}
+
 bool RobustnessDropper::matchesPacket(const Packet *packet) const{
     long long nsModNow = getModNow();
-    if(checkTimeInAnyWindow(nsModNow, ingressWindows) || 
+    auto& curInWindow = ingressWindows[curIngressWinIdx];
+    auto& globalSafeIntervals = globalSafe.at(curIngressWinIdx);
+
+    if((nsModNow >= curInWindow.start && nsModNow < curInWindow.end) || 
       (checkTimeInAnyWindow(nsModNow, globalSafeIntervals))){
         return true;
     } else {
@@ -130,7 +140,7 @@ bool RobustnessDropper::matchesPacket(const Packet *packet) const{
 bool RobustnessDropper::checkTimeInAnyWindow(long long time_ns, vector<Window> windows) const{
     bool in = false;
     for(auto& window: windows){
-        if(time_ns > window.start && time_ns < window.end){
+        if(time_ns >= window.start && time_ns < window.end){
             in = true;
             break;
         }
@@ -142,6 +152,7 @@ bool RobustnessDropper::checkTimeInAnyWindow(long long time_ns, vector<Window> w
 
 void RobustnessDropper::dropPacket(Packet *packet)
 {
+    updateCurIdx();
     EV_DEBUG << "Dropping packet"
              << EV_FIELD(numDropped)
              << EV_FIELD(packet->getFullName())
@@ -155,6 +166,7 @@ void RobustnessDropper::dropPacket(Packet *packet)
 
 void RobustnessDropper::processPacket(Packet *packet)
 {
+    updateCurIdx();
     EV_DEBUG << "Processing packet"
              << EV_FIELD(numPackets)
              << EV_FIELD(packet->getFullName())

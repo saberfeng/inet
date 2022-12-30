@@ -63,7 +63,7 @@ protected:
     };
     vector<Window> ingressWindows;
 
-    using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;
+    // using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;
     using IngressIdxToIntervalMap = unordered_map<int, vector<Window>>;
     vector<Window> globalSafeIntervals;
     IngressIdxToIntervalMap globalSafe;
@@ -77,6 +77,7 @@ protected:
     virtual void parseGlobalSafe();
     virtual bool checkTimeInAnyWindow(long long time, vector<Window> windows) const;
     virtual long long getModNow() const; // current sim time mod hypercycle (in ns)
+    virtual void updateCurIdx();
 public:
     virtual bool matchesPacket(const Packet *packet) const override; // match->process, not match->drop
 
