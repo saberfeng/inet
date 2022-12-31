@@ -80,16 +80,16 @@ void MacForwardingTableConfigurator::extendConfiguration(Node *destinationNode, 
             auto interfaceName = firstInterface->networkInterface->getInterfaceName();
             auto moduleId = sourceNode->module->getSubmodule("macTable")->getId();
             auto it = configurations.find(moduleId);
-            if (it == configurations.end())
+            if (it == configurations.end()){
                 configurations[moduleId] = new cValueArray();
-            else if (findForwardingRule(it->second, macAddress, interfaceName) != nullptr)
+                it = configurations.find(moduleId);
+            } else if (findForwardingRule(it->second, macAddress, interfaceName) != nullptr){
                 continue;
-            else {
-                auto rule = new cValueMap();
-                rule->set("address", macAddress.str());
-                rule->set("interface", interfaceName);
-                it->second->add(rule);
             }
+            auto rule = new cValueMap();
+            rule->set("address", macAddress.str());
+            rule->set("interface", interfaceName);
+            it->second->add(rule);
         }
     }
 }
