@@ -1,4 +1,6 @@
 - How to generate random error, and make sure in a period, only generate one error
 
--- add a module after eth[].macLayer.queue, 
+-- add a module between eth[].macLayer.queue, and eth[].macLayer.server
+can not add after eth[].macLayer.queue.transmissionSelection, because of PassivePacketSource casting
+
 -- use signal to inform the module to generate error?
