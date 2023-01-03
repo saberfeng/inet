@@ -9,6 +9,7 @@ package inet.networks.base;
 
 import inet.linklayer.configurator.gatescheduling.contract.IGateScheduleConfigurator;
 import inet.networklayer.configurator.contract.INetworkConfigurator;
+import inet.queueing.contract.ISignalSource;
 
 //
 // This module serves as a network base module for Time-Sensitive Networking (TSN).
@@ -29,5 +30,8 @@ network TsnNetworkBase extends WiredNetworkBase
         }
         globalSafeConfigurator: <default("")> like IGateScheduleConfigurator if typename != "" {
             @display("p=100,800;is=s");
+        }
+        delaySignalSource: <default("DelaySignalSource")> like ISignalSource {
+            @display("p=100,900;is=s");
         }
 }
