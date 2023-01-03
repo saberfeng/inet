@@ -38,8 +38,9 @@ module EthernetMacLayer like IEthernetMacLayer
         queue: <default("PacketQueue")> like IPacketQueue {
             @display("p=200,100");
         }
-        server: <default("InstantServer")> like IPacketServer {
+        server: <default("PacketServer")> like IPacketServer {
             serveSchedulingPriority = default(0);
+            processingTime = default(0.001ms);
             @display("p=200,200");
         }
         outboundEmitter: <default("PacketEmitter")> like IPacketFlow {
