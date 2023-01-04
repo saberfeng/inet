@@ -38,7 +38,7 @@ module EthernetMacLayer like IEthernetMacLayer
         queue: <default("PacketQueue")> like IPacketQueue {
             @display("p=200,100");
         }
-        server: <default("PacketServer")> like IPacketServer {
+        server: <default("RcvDelaySignalServer")> like IPacketServer {
             serveSchedulingPriority = default(0);
             processingTime = default(0.001ms);
             @display("p=200,200");

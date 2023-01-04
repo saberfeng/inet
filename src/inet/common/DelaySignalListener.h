@@ -7,11 +7,11 @@ namespace inet {
 
 class INET_API DelaySignalListener : public cListener
 {
-  public:
-    DelaySignalListener(cModule* module){}
-
-  public:
-    virtual void receiveSignal(cComponent *source, simsignal_t signal, cObject *object, cObject *details) override;
+    public:
+        DelaySignalListener(cModule* owner):owner(owner){}
+        virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details) override;
+    private:
+        cModule* owner; // owner of this listner
 };
 
 } // namespace inet
