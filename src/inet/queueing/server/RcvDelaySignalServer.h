@@ -3,9 +3,14 @@
 
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/PacketServerBase.h"
+#include <iostream>
 
 namespace inet{
 namespace queueing {
+
+using std::cout;
+using std::endl;
+
 class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>
 {
     protected:

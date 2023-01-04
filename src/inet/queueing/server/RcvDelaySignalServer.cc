@@ -64,6 +64,7 @@ bool RcvDelaySignalServer::canStartProcessingPacket()
 
 void RcvDelaySignalServer::startProcessingPacket()
 {
+    cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
     packet = provider->pullPacket(inputGate->getPathStartGate());
     take(packet);
     emit(packetPulledSignal, packet);
@@ -79,6 +80,7 @@ void RcvDelaySignalServer::endProcessingPacket()
     increaseTimeTag<ProcessingTimeTag>(packet, bitProcessingTime, packetProcessingTime);
     processedTotalLength += packet->getDataLength();
     emit(packetPushedSignal, packet);
+    cout << "**********" << getNedTypeAndFullPath() << " pushing" << endl;
     pushOrSendPacket(packet, outputGate, consumer);
     numProcessedPackets++;
     packet = nullptr;
@@ -86,6 +88,7 @@ void RcvDelaySignalServer::endProcessingPacket()
 
 void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 {
+    cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
     Enter_Method("handleCanPushPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)
@@ -99,6 +102,7 @@ void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 
 void RcvDelaySignalServer::handleCanPullPacketChanged(cGate *gate)
 {
+    cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
     Enter_Method("handleCanPullPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)
