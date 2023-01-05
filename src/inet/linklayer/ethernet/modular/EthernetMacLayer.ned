@@ -40,7 +40,6 @@ module EthernetMacLayer like IEthernetMacLayer
         }
         server: <default("RcvDelaySignalServer")> like IPacketServer {
             serveSchedulingPriority = default(0);
-            processingTime = default(0.001ms);
             @display("p=200,200");
         }
         outboundEmitter: <default("PacketEmitter")> like IPacketFlow {

@@ -17,6 +17,25 @@ RcvDelaySignalServer::~RcvDelaySignalServer()
     delete packet;
 }
 
+bool RcvDelaySignalServer::isDebugTargetModule(){
+    return getNedTypeAndFullPath() ==
+           std::string("(inet.queueing.server.RcvDelaySignalServer)TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
+}
+
+bool RcvDelaySignalServer::isNowInEffect(){
+    simtime_t now = simTime();
+    return (now >= effectStartTime) && (now <= effectStartTime + effectDuration);
+}
+
+void RcvDelaySignalServer::updateEffect(
+        simtime_t newDelayLength,
+        simtime_t newEffectStartTime,
+        simtime_t newEffectDuration){
+    delayLength = newDelayLength;
+    effectStartTime = newEffectStartTime;
+    effectDuration = newEffectDuration;
+}
+
 void RcvDelaySignalServer::initialize(int stage)
 {
     ClockUserModuleMixin::initialize(stage);
@@ -27,6 +46,9 @@ void RcvDelaySignalServer::initialize(int stage)
             serveTimer->setSchedulingPriority(serveSchedulingPriority);
         }
         processingTimer = new ClockEvent("ProcessingTimer");
+        delayLength = par("delayLength");
+        effectStartTime = par("effectStartTime");
+        effectDuration = par("effectDuration");
     }
 }
 
@@ -50,10 +72,15 @@ void RcvDelaySignalServer::handleMessage(cMessage *message)
 
 void RcvDelaySignalServer::scheduleProcessingTimer()
 {
-    clocktime_t processingTime = par("processingTime");
+    clocktime_t delayLength;
+    if(isNowInEffect()){
+        delayLength = par("delayLength");
+    } else {
+        delayLength = 0; // out of effect time, no delay
+    }
     auto processingBitrate = bps(par("processingBitrate"));
-    processingTime += s(packet->getTotalLength() / processingBitrate).get();
-    scheduleClockEventAfter(processingTime, processingTimer);
+    delayLength += s(packet->getTotalLength() / processingBitrate).get();
+    scheduleClockEventAfter(delayLength, processingTimer);
 }
 
 bool RcvDelaySignalServer::canStartProcessingPacket()
@@ -64,7 +91,10 @@ bool RcvDelaySignalServer::canStartProcessingPacket()
 
 void RcvDelaySignalServer::startProcessingPacket()
 {
-    cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
+    // DEBUG
+    if(isDebugTargetModule()){
+        cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
+    }
     packet = provider->pullPacket(inputGate->getPathStartGate());
     take(packet);
     emit(packetPulledSignal, packet);
@@ -80,7 +110,10 @@ void RcvDelaySignalServer::endProcessingPacket()
     increaseTimeTag<ProcessingTimeTag>(packet, bitProcessingTime, packetProcessingTime);
     processedTotalLength += packet->getDataLength();
     emit(packetPushedSignal, packet);
-    cout << "**********" << getNedTypeAndFullPath() << " pushing" << endl;
+    // DEBUG
+    if(isDebugTargetModule()){
+        cout << "**********" << getNedTypeAndFullPath() << " pushing" << endl;
+    }
     pushOrSendPacket(packet, outputGate, consumer);
     numProcessedPackets++;
     packet = nullptr;
@@ -88,7 +121,10 @@ void RcvDelaySignalServer::endProcessingPacket()
 
 void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 {
-    cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
+    // DEBUG
+    if(isDebugTargetModule()){
+        cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
+    }
     Enter_Method("handleCanPushPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)
@@ -102,7 +138,10 @@ void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 
 void RcvDelaySignalServer::handleCanPullPacketChanged(cGate *gate)
 {
-    cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
+    // DEBUG
+    if(isDebugTargetModule()){
+        cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
+    }
     Enter_Method("handleCanPullPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)

@@ -16,8 +16,11 @@ void DelaySignalListener::receiveSignal(cComponent *source, simsignal_t signalID
     }
     
     cValueMap* detailMap = check_and_cast<cValueMap*>(details);
-    assert(detailMap->containsKey("delayLength") && detailMap->containsKey("effectDuration"));
+    assert(detailMap->containsKey("delayLength") &&
+           detailMap->containsKey("effectStartTime") &&
+           detailMap->containsKey("effectDuration"));
     double delayLength = detailMap->get("delayLength").doubleValue();
+    double effectStartTime = detailMap->get("effectStartTime").doubleValue();
     double effectDuration = detailMap->get("effectDuration").doubleValue();
 }
 

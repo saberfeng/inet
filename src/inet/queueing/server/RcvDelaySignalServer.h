@@ -17,6 +17,10 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       cMessage *serveTimer = nullptr;
       ClockEvent *processingTimer = nullptr;
       Packet *packet = nullptr;
+      simtime_t delayLength;
+      simtime_t effectStartTime;
+      simtime_t effectDuration;
+
 
     protected:
       virtual void initialize(int stage) override;
@@ -25,6 +29,8 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       virtual bool canStartProcessingPacket();
       virtual void startProcessingPacket();
       virtual void endProcessingPacket();
+      virtual bool isDebugTargetModule();
+      virtual bool isNowInEffect();
 
     public:
       virtual ~RcvDelaySignalServer();
