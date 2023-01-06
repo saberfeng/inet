@@ -3,8 +3,6 @@
 
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/PacketServerBase.h"
-#include "inet/common/DelaySignalListener.h"
-#include "inet/common/DelaySignalListenerOwner.h"
 #include <iostream>
 
 namespace inet{
@@ -13,15 +11,12 @@ namespace queueing {
 using std::cout;
 using std::endl;
 
-class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>, public cListener
+class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>
 {
     protected:
       cMessage *serveTimer = nullptr;
       ClockEvent *processingTimer = nullptr;
       Packet *packet = nullptr;
-      simtime_t delayLength;
-      simtime_t effectStartTime;
-      simtime_t effectDuration;
 
 
     protected:
@@ -31,7 +26,6 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       virtual bool canStartProcessingPacket();
       virtual void startProcessingPacket();
       virtual void endProcessingPacket();
-      virtual bool isDebugTargetModule();
       virtual bool isNowInEffect();
 
     public:
@@ -41,7 +35,6 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       virtual void handleCanPullPacketChanged(cGate *gate) override;
 
       virtual std::string resolveDirective(char directive) const override;
-      virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details) override;
 };
 
 } // namespace queueing

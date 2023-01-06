@@ -8,22 +8,21 @@ Define_Module(DelaySignalSource);
 void DelaySignalSource::initialize()
 {
     startTime = par("startTime");
-    endTime = par("endTime");
-    signal = registerSignal("delaySignal");
+//    endTime = par("endTime");
+    numActionToDo = par("numActionToDo");
     scheduleAt(startTime, new cMessage("timer"));
 }
 
 void DelaySignalSource::handleMessage(cMessage *msg)
 {
-    if (endTime < 0 || simTime() < endTime) {
-        int targetModuleId = this->findModuleByPath("TsnDumbbellNetwork.switch1.eth[2].macLayer.server")->getId();
+    if (numActionToDo < 0 || numActionDone < numActionToDo) {
+        cModule* targetModule = this->findModuleByPath("TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
 
-        auto details = new cValueMap();
-        details->set("delayLength",0.000001); // 1us
-        details->set("effectStartTime", simTime().dbl()); // start apply delay now
-        details->set("effectDuration", 1.0); // effect lasts for 1s
+        targetModule->par("effectStartTime") = simTime().dbl(); // apply delay from now
+        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
+        targetModule->par("delayLength") = 0.000001; // 1us
 
-        emit(signal, targetModuleId, details);
+        numActionDone++;
         scheduleAfter(par("interval"), msg);
     }
     else {

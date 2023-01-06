@@ -27,43 +27,14 @@ void RcvDelaySignalServer::initialize(int stage)
             serveTimer->setSchedulingPriority(serveSchedulingPriority);
         }
         processingTimer = new ClockEvent("ProcessingTimer");
-        delayLength = par("delayLength");
-        effectStartTime = par("effectStartTime");
-        effectDuration = par("effectDuration");
-        subscribe("delaySignal", this);
     }
 }
 
-void RcvDelaySignalServer::receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details){
-    simsignal_t delaySignalId = cComponent::registerSignal("delaySignal");
-    if(delaySignalId != signalID){ // only receive delaySignal
-        return;
-    }
-
-    if(this->getId() != moduleId){ // only process signal targeting its owner
-        return;
-    }
-
-    cValueMap* detailMap = check_and_cast<cValueMap*>(details);
-    assert(detailMap->containsKey("delayLength") &&
-           detailMap->containsKey("effectStartTime") &&
-           detailMap->containsKey("effectDuration"));
-    delayLength = detailMap->get("delayLength").doubleValue();
-    effectStartTime = detailMap->get("effectStartTime").doubleValue();
-    effectDuration = detailMap->get("effectDuration").doubleValue();
-    std::cout << "received signal! delayLength:" << delayLength
-              << " effectStartTime:" << effectStartTime
-              << " effectDuration:" << effectDuration << std::endl;
-}
-
-bool RcvDelaySignalServer::isDebugTargetModule(){
-    return getNedTypeAndFullPath() ==
-           std::string("(inet.queueing.server.RcvDelaySignalServer)TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
-}
 
 bool RcvDelaySignalServer::isNowInEffect(){
     simtime_t now = simTime();
-    return (now >= effectStartTime) && (now <= effectStartTime + effectDuration);
+    return (now >= simtime_t(par("effectStartTime"))) &&
+           (now <= simtime_t(par("effectStartTime")) + simtime_t(par("effectDuration")));
 }
 
 void RcvDelaySignalServer::handleMessage(cMessage *message)
@@ -92,8 +63,8 @@ void RcvDelaySignalServer::scheduleProcessingTimer()
     } else {
         delayLength = 0; // out of effect time, no delay
     }
-    auto processingBitrate = bps(par("processingBitrate"));
-    delayLength += s(packet->getTotalLength() / processingBitrate).get();
+//    auto processingBitrate = bps(par("processingBitrate"));
+//    delayLength += s(packet->getTotalLength() / processingBitrate).get();
     scheduleClockEventAfter(delayLength, processingTimer);
 }
 

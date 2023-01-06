@@ -9,8 +9,9 @@ namespace inet {
 class INET_API DelaySignalSource : public cSimpleModule, public virtual ISignalSource
 {
   protected:
-    simtime_t startTime, endTime;
-    simsignal_t signal = -1;
+    simtime_t startTime;
+    int numActionToDo;
+    int numActionDone = 0;
 
   public:
     DelaySignalSource() {}
