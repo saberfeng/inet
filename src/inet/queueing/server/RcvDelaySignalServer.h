@@ -3,6 +3,8 @@
 
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/PacketServerBase.h"
+#include "inet/common/DelaySignalListener.h"
+#include "inet/common/DelaySignalListenerOwner.h"
 #include <iostream>
 
 namespace inet{
@@ -11,7 +13,7 @@ namespace queueing {
 using std::cout;
 using std::endl;
 
-class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>
+class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>, public cListener
 {
     protected:
       cMessage *serveTimer = nullptr;
@@ -39,6 +41,7 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       virtual void handleCanPullPacketChanged(cGate *gate) override;
 
       virtual std::string resolveDirective(char directive) const override;
+      virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details) override;
 };
 
 } // namespace queueing

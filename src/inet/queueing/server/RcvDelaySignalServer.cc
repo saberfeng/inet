@@ -17,25 +17,6 @@ RcvDelaySignalServer::~RcvDelaySignalServer()
     delete packet;
 }
 
-bool RcvDelaySignalServer::isDebugTargetModule(){
-    return getNedTypeAndFullPath() ==
-           std::string("(inet.queueing.server.RcvDelaySignalServer)TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
-}
-
-bool RcvDelaySignalServer::isNowInEffect(){
-    simtime_t now = simTime();
-    return (now >= effectStartTime) && (now <= effectStartTime + effectDuration);
-}
-
-void RcvDelaySignalServer::updateEffect(
-        simtime_t newDelayLength,
-        simtime_t newEffectStartTime,
-        simtime_t newEffectDuration){
-    delayLength = newDelayLength;
-    effectStartTime = newEffectStartTime;
-    effectDuration = newEffectDuration;
-}
-
 void RcvDelaySignalServer::initialize(int stage)
 {
     ClockUserModuleMixin::initialize(stage);
@@ -49,7 +30,40 @@ void RcvDelaySignalServer::initialize(int stage)
         delayLength = par("delayLength");
         effectStartTime = par("effectStartTime");
         effectDuration = par("effectDuration");
+        subscribe("delaySignal", this);
     }
+}
+
+void RcvDelaySignalServer::receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details){
+    simsignal_t delaySignalId = cComponent::registerSignal("delaySignal");
+    if(delaySignalId != signalID){ // only receive delaySignal
+        return;
+    }
+
+    if(this->getId() != moduleId){ // only process signal targeting its owner
+        return;
+    }
+
+    cValueMap* detailMap = check_and_cast<cValueMap*>(details);
+    assert(detailMap->containsKey("delayLength") &&
+           detailMap->containsKey("effectStartTime") &&
+           detailMap->containsKey("effectDuration"));
+    delayLength = detailMap->get("delayLength").doubleValue();
+    effectStartTime = detailMap->get("effectStartTime").doubleValue();
+    effectDuration = detailMap->get("effectDuration").doubleValue();
+    std::cout << "received signal! delayLength:" << delayLength
+              << " effectStartTime:" << effectStartTime
+              << " effectDuration:" << effectDuration << std::endl;
+}
+
+bool RcvDelaySignalServer::isDebugTargetModule(){
+    return getNedTypeAndFullPath() ==
+           std::string("(inet.queueing.server.RcvDelaySignalServer)TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
+}
+
+bool RcvDelaySignalServer::isNowInEffect(){
+    simtime_t now = simTime();
+    return (now >= effectStartTime) && (now <= effectStartTime + effectDuration);
 }
 
 void RcvDelaySignalServer::handleMessage(cMessage *message)
@@ -91,10 +105,10 @@ bool RcvDelaySignalServer::canStartProcessingPacket()
 
 void RcvDelaySignalServer::startProcessingPacket()
 {
-    // DEBUG
-    if(isDebugTargetModule()){
-        cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
-    }
+//    // DEBUG
+//    if(isDebugTargetModule()){
+//        cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
+//    }
     packet = provider->pullPacket(inputGate->getPathStartGate());
     take(packet);
     emit(packetPulledSignal, packet);
@@ -110,10 +124,10 @@ void RcvDelaySignalServer::endProcessingPacket()
     increaseTimeTag<ProcessingTimeTag>(packet, bitProcessingTime, packetProcessingTime);
     processedTotalLength += packet->getDataLength();
     emit(packetPushedSignal, packet);
-    // DEBUG
-    if(isDebugTargetModule()){
-        cout << "**********" << getNedTypeAndFullPath() << " pushing" << endl;
-    }
+//    // DEBUG
+//    if(isDebugTargetModule()){
+//        cout << "**********" << getNedTypeAndFullPath() << " pushing" << endl;
+//    }
     pushOrSendPacket(packet, outputGate, consumer);
     numProcessedPackets++;
     packet = nullptr;
@@ -121,10 +135,10 @@ void RcvDelaySignalServer::endProcessingPacket()
 
 void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 {
-    // DEBUG
-    if(isDebugTargetModule()){
-        cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
-    }
+//    // DEBUG
+//    if(isDebugTargetModule()){
+//        cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
+//    }
     Enter_Method("handleCanPushPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)
@@ -138,10 +152,10 @@ void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 
 void RcvDelaySignalServer::handleCanPullPacketChanged(cGate *gate)
 {
-    // DEBUG
-    if(isDebugTargetModule()){
-        cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
-    }
+//    // DEBUG
+//    if(isDebugTargetModule()){
+//        cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
+//    }
     Enter_Method("handleCanPullPacketChanged");
     if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
         if (serveTimer)

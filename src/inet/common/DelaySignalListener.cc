@@ -1,4 +1,5 @@
 #include "inet/common/DelaySignalListener.h"
+#include <iostream>
 
 namespace inet {
 
@@ -10,7 +11,7 @@ void DelaySignalListener::receiveSignal(cComponent *source, simsignal_t signalID
         return;
     }
 
-    auto ownerId = owner->getId();
+    auto ownerId = check_and_cast<cModule*>(owner)->getId();
     if(ownerId != moduleId){ // only process signal targeting its owner
         return;
     }
@@ -22,6 +23,10 @@ void DelaySignalListener::receiveSignal(cComponent *source, simsignal_t signalID
     double delayLength = detailMap->get("delayLength").doubleValue();
     double effectStartTime = detailMap->get("effectStartTime").doubleValue();
     double effectDuration = detailMap->get("effectDuration").doubleValue();
+    owner->updateEffectParam(delayLength, effectStartTime, effectDuration);
+    std::cout << "received signal! delayLength:" << delayLength
+              << " effectStartTime:" << effectStartTime
+              << " effectDuration:" << effectDuration << std::endl;
 }
 
 }

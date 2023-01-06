@@ -21,11 +21,10 @@ simple DelaySignalSource like ISignalSource
 {
     parameters:
         @display("i=block/cogwheel");
-        @signal[delaySignal];
-        double startTime @unit(s) = default(0s);
-        double endTime @unit(s) = default(-1s);
-        volatile double interval @unit(s) = default(1s);
+        @signal[delaySignal](type=long);
+        double startTime @unit(s) = default(1000us);
+        double endTime @unit(s) = default(1001us);
+        volatile double interval @unit(s) = default(2000us);
         string signalName = "delaySignal";
-        volatile double value = 0;
 }
 

@@ -2,16 +2,17 @@
 #define __INET_DELAYSIGNALLISTENER_H
 
 #include "inet/common/INETDefs.h"
+#include "inet/common/DelaySignalListenerOwner.h"
 
 namespace inet {
 
 class INET_API DelaySignalListener : public cListener
 {
     public:
-        DelaySignalListener(cModule* owner):owner(owner){}
+        DelaySignalListener(DelaySignalListenerOwner* owner):owner(owner){}
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, intval_t moduleId, cObject *details) override;
     private:
-        cModule* owner; // owner of this listner
+        DelaySignalListenerOwner* owner; // owner of this listener
 };
 
 } // namespace inet
