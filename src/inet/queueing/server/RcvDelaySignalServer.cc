@@ -34,7 +34,7 @@ void RcvDelaySignalServer::initialize(int stage)
 bool RcvDelaySignalServer::isNowInEffect(){
     simtime_t now = simTime();
     return (now >= simtime_t(par("effectStartTime"))) &&
-           (now <= simtime_t(par("effectStartTime")) + simtime_t(par("effectDuration")));
+            delayedPackets < int(par("numDelayPackets"));
 }
 
 void RcvDelaySignalServer::handleMessage(cMessage *message)
@@ -60,6 +60,7 @@ void RcvDelaySignalServer::scheduleProcessingTimer()
     clocktime_t delayLength;
     if(isNowInEffect()){
         delayLength = par("delayLength");
+        delayedPackets++;
     } else {
         delayLength = 0; // out of effect time, no delay
     }

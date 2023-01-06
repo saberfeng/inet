@@ -17,6 +17,7 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       cMessage *serveTimer = nullptr;
       ClockEvent *processingTimer = nullptr;
       Packet *packet = nullptr;
+      int delayedPackets = 0;
 
 
     protected:

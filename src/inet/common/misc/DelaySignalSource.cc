@@ -19,7 +19,8 @@ void DelaySignalSource::handleMessage(cMessage *msg)
         cModule* targetModule = this->findModuleByPath("TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
 
         targetModule->par("effectStartTime") = simTime().dbl(); // apply delay from now
-        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
+//        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
+        targetModule->par("numDelayPackets") = 1; // this change expire after 1000us
         targetModule->par("delayLength") = 0.000001; // 1us
 
         numActionDone++;
