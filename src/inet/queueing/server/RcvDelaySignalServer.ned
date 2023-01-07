@@ -25,7 +25,6 @@ simple RcvDelaySignalServer extends PacketServerBase like IPacketServer
         int serveSchedulingPriority = default(-1); // specifies the FES scheduling priority for the extra event that is pulling the packet, -1 means no extra event
         volatile double delayLength @mutable @unit(s) = default(0ms); // determines additional delay per packet
         volatile double effectStartTime @mutable @unit(s) = default(0ms);
-        volatile double effectDuration @mutable @unit(s) = default(0ms);
         volatile int numDelayPackets @mutable = default(0);
         volatile double processingBitrate @unit(bps) = default(inf bps); // determines additional processing time per bit
         @class(RcvDelaySignalServer);
