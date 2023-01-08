@@ -1,6 +1,5 @@
 - How to generate random error, and make sure in a period, only generate one error
 
--- add a module between eth[].macLayer.queue, and eth[].macLayer.server
-can not add after eth[].macLayer.queue.transmissionSelection, because of PassivePacketSource casting
+- add bitrate parameter to .ned files
 
--- use signal to inform the module to generate error?
+- add IN, Orion topo .ned files

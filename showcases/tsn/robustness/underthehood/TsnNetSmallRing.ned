@@ -19,7 +19,7 @@ import inet.networks.base.TsnNetworkBase;
 import inet.node.contract.IEthernetNetworkNode;
 import inet.node.ethernet.EthernetLink;
 
-network CustomTsnNetwork extends TsnNetworkBase
+network TsnNetSmallRing extends TsnNetworkBase
 {
     parameters:
         *.eth[*].bitrate = default(100Mbps);
