@@ -1,5 +1,6 @@
 - How to generate random error, and make sure in a period, only generate one error
 
 - add bitrate parameter to .ned files
+- does end hosts need bitrate parameters?
 
 - add IN, Orion topo .ned files

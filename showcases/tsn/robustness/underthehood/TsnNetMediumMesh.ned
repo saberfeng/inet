@@ -23,7 +23,9 @@ import inet.node.ethernet.EthernetLink;
 network TsnNetMediumMesh extends TsnNetworkBase
 {
     parameters:
-        *.eth[*].bitrate = default(1Gbps);
+        d*.eth[0].bitrate = default(100Mbps);
+        s*.eth[0..3].bitrate = default(100Mbps); // [0..3] 0 and 3 are inclusive
+        s*.eth[4..6].bitrate = default(1Gbps);
         @display("bgb=919,1005");
     submodules:
         d0: <default("TsnDevice")> like IEthernetNetworkNode {
