@@ -4,3 +4,5 @@
 - does end hosts need bitrate parameters?
 
 - add IN, Orion topo .ned files
+
+- key problem: when slot not long enough to transmit, frame won't be transmitted

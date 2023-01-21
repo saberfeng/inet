@@ -22,7 +22,9 @@ import inet.node.ethernet.EthernetLink;
 network TsnNetSmallRing extends TsnNetworkBase
 {
     parameters:
-        *.eth[*].bitrate = default(100Mbps);
+        d*.eth[0].bitrate = default(100Mbps);
+        s{0..1000}.eth[0..1].bitrate = default(100Mbps);
+        s{0..1000}.eth[2].bitrate = default(1Gbps);
     submodules:
         d0: <default("TsnDevice")> like IEthernetNetworkNode {
             @display("p=300,150");
