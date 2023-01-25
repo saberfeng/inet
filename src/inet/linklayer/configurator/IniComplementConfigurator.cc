@@ -34,8 +34,8 @@ void IniComplementConfigurator::configureClientApps(vector<string>& lines){
         string dstAddress = elements[3];
         int dstPort = stoi(elements[4]);
         int packetLength = stoi(elements[5]);
-        int prodInterval = stoi(elements[6]);
-        int initOffset = stoi(elements[7]);
+        double prodInterval = std::stod(elements[6]) / 1e6; // us -> s
+        double initOffset = std::stod(elements[7]) / 1e6; // us -> s
 
         stringstream ssApp;
         ssApp << getNetName() << "." << srcDevice << ".app[" << srcAppIdx << "]";
@@ -73,7 +73,7 @@ void IniComplementConfigurator::configureServerApps(vector<string>& lines){
         string ioPath = ssApp.str() + ".io";
         cModule* appIo = this->findModuleByPath(ioPath.c_str());
 
-        application->par("display-name") = displayName;
+        application->setDisplayName(displayName.c_str());
         appIo->par("localPort") = localPort;
     }
 }
@@ -82,11 +82,27 @@ void IniComplementConfigurator::configureServerApps(vector<string>& lines){
 //FG0,7
 //FG1,7
 void IniComplementConfigurator::configureEncDecApps(vector<string>& lines){
-
+    cValueArray* encDecMaps = new cValueArray();
     for(const auto& line : lines){
         vector<string> elements = splitString(line, ",");
-        assert(elements.size() >= 8);
+        assert(elements.size() >= 2);
+        string stream = elements[0];
+        int pcp = stoi(elements[1]);
 
+        cValueMap* encDecMap = new cValueMap();
+        encDecMap->set("stream", stream);
+        encDecMap->set("pcp", pcp);
+        encDecMaps->add(encDecMap);
+    }
+
+    // iterate through all devices with a streamCoder
+    cModule* net = this->findModuleByPath(getNetName().c_str());
+    vector<string> subNames = net->getSubmoduleNames();
+    for(const auto& subName : subNames){
+        cModule* sub = this->getSubmodule(subName.c_str());
+        cModuleType* type = sub->getModuleType();
+        string s = type->getClassAndFullName();
+        string s1 = type->getFullName();
     }
 }
 
