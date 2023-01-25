@@ -97,12 +97,22 @@ void IniComplementConfigurator::configureEncDecApps(vector<string>& lines){
 
     // iterate through all devices with a streamCoder
     cModule* net = this->findModuleByPath(getNetName().c_str());
-    vector<string> subNames = net->getSubmoduleNames();
-    for(const auto& subName : subNames){
-        cModule* sub = this->getSubmodule(subName.c_str());
-        cModuleType* type = sub->getModuleType();
-        string s = type->getClassAndFullName();
-        string s1 = type->getFullName();
+    for (cModule::SubmoduleIterator it(net); !it.end(); ++it) {
+        cModule *sub = *it;
+        string subFullClassName = sub->getNedTypeAndFullName();
+        vector<string> splitted = splitString(subFullClassName, ".");
+        string subClassName = splitted[splitted.size()-1];
+        if(subClassName == "TsnDevice" || subClassName == "TsnSwitch"){
+            string subName = sub->getFullName();
+            stringstream ss;
+            ss << getNetName() << "." << subName << ".bridging.streamCoder.encoder";
+            cModule* encoder = this->findModuleByPath(ss.str().c_str());
+            encoder->par("mapping") = encDecMaps;
+
+            ss << getNetName() << "." << subName << ".bridging.streamCoder.decoder";
+            cModule* decoder = this->findModuleByPath(ss.str().c_str());
+            decoder->par("mapping") = encDecMaps;
+        }
     }
 }
 
