@@ -45,6 +45,7 @@ void ActivePacketSource::handleParameterChange(const char *name)
     if (name != nullptr) {
         if (!strcmp(name, "initialProductionOffset"))
             initialProductionOffset = par("initialProductionOffset");
+            productionIntervalParameter = &par("productionInterval");
     }
 }
 

@@ -1,0 +1,24 @@
+,client_app_conf,lines:2
+src_device,src_app_idx,display-name,destAddress,destPort,packetLength(bit),prodInterval(us),initialOffset(us)
+d3,0,FG0,d0,1000,11536,1000,0
+d3,1,FG1,d0,1001,11536,500,200000
+
+,server_app_conf,lines:2
+dst_device,app_idx,display-name,localPort
+d0,0,FG0,1000
+d0,1,FG1,1001
+
+,enc_dec,lines:2
+stream, pcp
+FG0,7
+FG1,7
+
+,stream_identifier,lines:2
+stream, destPort
+FG0,1000
+FG1,1001
+
+,gate_schedule,lines:2
+pcp,gateIndex,application,source,destination,packet_length(bit),packet_interval(us),max_latency(us)
+7,7,app[0],d3,d0,12000,1000,500
+7,7,app[1],d3,d0,12000,500,500

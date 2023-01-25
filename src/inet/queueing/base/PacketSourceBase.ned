@@ -36,7 +36,7 @@ simple PacketSourceBase extends PacketProcessorBase
     parameters:
         string packetNameFormat = default("%a-%c"); // see directives in module documentation
         string packetRepresentation @units("bitCount","bits","byteCount","bytes","applicationPacket") = default("byteCount"); // determines the chunk of the packet data
-        volatile int packetLength @unit(b);
+        volatile int packetLength @mutable @unit(b) = default(0b);
         volatile int packetData = default(-1);
         bool attachCreationTimeTag = default(true);
         bool attachIdentityTag = default(true);

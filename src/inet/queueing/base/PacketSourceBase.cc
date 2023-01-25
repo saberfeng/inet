@@ -35,6 +35,14 @@ void PacketSourceBase::initialize(int stage)
     }
 }
 
+void PacketSourceBase::handleParameterChange(const char *name)
+{
+    if (name != nullptr) {
+        if (!strcmp(name, "packetLength"))
+            packetLengthParameter = &par("packetLength");
+    }
+}
+
 std::string PacketSourceBase::createPacketName(const Ptr<const Chunk>& data) const
 {
     return StringFormat::formatString(packetNameFormat, [&] (char directive) -> std::string {

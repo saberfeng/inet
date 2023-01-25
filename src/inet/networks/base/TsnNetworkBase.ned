@@ -32,7 +32,9 @@ network TsnNetworkBase extends WiredNetworkBase
             @display("p=100,800;is=s");
         }
         delaySignalSource: <default("DelaySignalSource")> like ISignalSource if typename != "" {
-            
             @display("p=100,900;is=s");
+        }
+        iniComplementConfigurator: <default("")> like IGateScheduleConfigurator if typename != ""{
+        	@display("p=100,1000;is=s");
         }
 }

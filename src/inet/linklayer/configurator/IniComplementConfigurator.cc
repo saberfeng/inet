@@ -1,0 +1,165 @@
+#include "inet/linklayer/configurator/IniComplementConfigurator.h"
+
+
+namespace inet{
+
+Define_Module(IniComplementConfigurator);
+
+void IniComplementConfigurator::initialize(int stage){
+    if (stage == INITSTAGE_QUEUEING) {
+        configure();
+    }
+}
+
+//void IniComplementConfigurator::skipEmptyLine(ifstream& inputFile){
+//    string line;
+//    while(getline(inputFile, line)){
+//
+//    }
+//}
+
+string IniComplementConfigurator::getNetName(){
+    string path = this->getFullPath(); // TsnNetSmallRing.iniComplementConfigurator
+    return splitString(path, ".")[0];
+}
+
+void IniComplementConfigurator::configureClientApps(vector<string>& lines){
+    for(const auto& line : lines){
+        vector<string> elements = splitString(line, ",");
+        assert(elements.size() >= 8);
+
+        string srcDevice = elements[0];
+        int srcAppIdx = stoi(elements[1]);
+        string displayName = elements[2];
+        string dstAddress = elements[3];
+        int dstPort = stoi(elements[4]);
+        int packetLength = stoi(elements[5]);
+        int prodInterval = stoi(elements[6]);
+        int initOffset = stoi(elements[7]);
+
+        stringstream ssApp;
+        ssApp << getNetName() << "." << srcDevice << ".app[" << srcAppIdx << "]";
+        cModule* application = this->findModuleByPath(ssApp.str().c_str());
+
+        string ioPath = ssApp.str() + ".io";
+        cModule* appIo = this->findModuleByPath(ioPath.c_str());
+
+        string sourcePath = ssApp.str() + ".source";
+        cModule* appSource = this->findModuleByPath(sourcePath.c_str());
+
+        application->setDisplayName(displayName.c_str());
+        appIo->par("destAddress") = dstAddress;
+        appIo->par("destPort") = dstPort;
+        appSource->par("packetLength") = packetLength;
+        appSource->par("productionInterval") = prodInterval;
+        appSource->par("initialProductionOffset") = initOffset;
+    }
+}
+
+void IniComplementConfigurator::configureServerApps(vector<string>& lines){
+    for(const auto& line : lines){
+        vector<string> elements = splitString(line, ",");
+        assert(elements.size() >= 4);
+
+        string dstDevice = elements[0];
+        int dstAppIdx = stoi(elements[1]);
+        string displayName = elements[2];
+        int localPort = stoi(elements[3]);
+
+        stringstream ssApp;
+        ssApp << getNetName() << "." << dstDevice << ".app[" << dstAppIdx << "]";
+        cModule* application = this->findModuleByPath(ssApp.str().c_str());
+
+        string ioPath = ssApp.str() + ".io";
+        cModule* appIo = this->findModuleByPath(ioPath.c_str());
+
+        application->par("display-name") = displayName;
+        appIo->par("localPort") = localPort;
+    }
+}
+
+//stream, pcp
+//FG0,7
+//FG1,7
+void IniComplementConfigurator::configureEncDecApps(vector<string>& lines){
+
+    for(const auto& line : lines){
+        vector<string> elements = splitString(line, ",");
+        assert(elements.size() >= 8);
+
+    }
+}
+
+void IniComplementConfigurator::configureStreamIdenApps(vector<string>& lines){
+    for(const auto& line : lines){
+        vector<string> elements = splitString(line, ",");
+        assert(elements.size() >= 8);
+
+    }
+}
+
+void IniComplementConfigurator::configureGateSchedApps(vector<string>& lines){
+    for(const auto& line : lines){
+        vector<string> elements = splitString(line, ",");
+        assert(elements.size() >= 8);
+
+    }
+}
+
+void IniComplementConfigurator::configureWrapper(
+        vector<string>& lines, string& confName){
+    if(confName == "client_app_conf"){
+        configureClientApps(lines);
+    } else if (confName == "server_app_conf"){
+        configureServerApps(lines);
+    } else if (confName == "enc_dec"){
+        configureEncDecApps(lines);
+    } else if (confName == "stream_identifier"){
+        configureStreamIdenApps(lines);
+    } else if (confName == "gate_schedule"){
+        configureGateSchedApps(lines);
+    } else {
+        throw "invalid confName";
+    }
+}
+
+void IniComplementConfigurator::parseHeader(
+        string& header, string& confName, int& lineNum){
+    vector<string> splitted = splitString(header, ",");
+    assert(splitted.size()>=3);
+    confName = splitted[1];
+    vector<string> splittedLineNum = splitString(splitted[2], ":");
+    lineNum =stoi(splittedLineNum[1]);
+}
+
+void IniComplementConfigurator::configure(){
+    string inputPath = par("iniComplementTxt");
+    std::ifstream inputFile(inputPath);
+    string line;
+    getline(inputFile, line);
+
+    while(inputFile){
+        assert(line[0]==',');
+        string confName;
+        int lineNum;
+        parseHeader(line, confName, lineNum);
+        getline(inputFile, line);
+        vector<string> lines;
+        for(int i = 0; i < lineNum; i++){
+            getline(inputFile, line);
+            lines.push_back(line);
+        }
+
+        configureWrapper(lines, confName);
+
+        while(getline(inputFile, line)){
+            if(!line.empty()){
+                break;
+            }
+        }
+    }
+
+
+}
+
+}

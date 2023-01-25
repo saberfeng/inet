@@ -16,8 +16,8 @@ simple UdpSocketIo
         string interfaceTableModule;
         string localAddress = default("");
         int localPort = default(-1);
-        string destAddress = default("");
-        int destPort;
+        string destAddress @mutable = default("");
+        int destPort @mutable = default(0);
         int timeToLive = default(-1); // if not -1, set the TTL (IPv4) or Hop Limit (IPv6) field of sent packets to this value
         bool dontFragment = default(false); // if true, asks IP to not fragment the message during routing
         int dscp = default(-1); // if not -1, set the DSCP (IPv4/IPv6) field of sent packets to this value
