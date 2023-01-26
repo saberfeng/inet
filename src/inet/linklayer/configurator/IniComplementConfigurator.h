@@ -32,7 +32,7 @@ class INET_API IniComplementConfigurator : public NetworkConfiguratorBase{
         virtual void configureServerApps(vector<string>& lines);
         virtual void configureEncDecApps(vector<string>& lines);
         virtual void configureStreamIdenApps(vector<string>& lines);
-        virtual void configureGateSchedApps(vector<string>& lines);
+//        virtual void configureGateSchedApps(vector<string>& lines);
         virtual string getNetName();
 };
 

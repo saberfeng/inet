@@ -34,8 +34,17 @@ void StreamClassifier::handleParameterChange(const char *name){
 
 int StreamClassifier::classifyPacket(Packet *packet)
 {
-    string packetName = packet->getFullName(); // "best effort-0" "d3-FG1-0"
-    string flowNameStr = splitString(packetName, "-")[1];
+    string packetName = packet->getFullName(); // "best effort-0" "d3-FG1-0" "FG0-0"
+    vector<string> splitted = splitString(packetName, "-");
+    string flowNameStr;
+    if(splitted.size() == 2){
+        flowNameStr = splitted[0];
+    } else if(splitted.size() == 3){
+        flowNameStr = splitted[1];
+    } else {
+        throw "unsupported packet name";
+    }
+//    string flowNameStr = splitString(packetName, "-")[1];
     assert(flowNameStr.substr(0,2) == string("FG"));
     const char* flowName = flowNameStr.c_str();
 

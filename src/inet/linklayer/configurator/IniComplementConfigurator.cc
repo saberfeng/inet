@@ -130,10 +130,16 @@ void IniComplementConfigurator::configureStreamIdenApps(vector<string>& lines){
         cValueMap* identMap = new cValueMap();
         identMap->set("stream", stream);
 
-        cDynamicExpression expr = cDynamicExpression();
+//        // 1. trying to use cDynamicExpression
+//        cDynamicExpression* expr = new cDynamicExpression();
+//        string pattern = string("udp.destPort == ") + destPort;
+//        expr->parse(pattern.c_str());
+//        identMap->set("packetFilter", expr);
+
+        // 2. use string pattern
         string pattern = string("udp.destPort == ") + destPort;
-        expr.parse(pattern.c_str());
-        identMap->set("packetFilter", expr);
+        identMap->set("packetFilter", pattern);
+
         identMaps->add(identMap);
     }
 
@@ -154,14 +160,27 @@ void IniComplementConfigurator::configureStreamIdenApps(vector<string>& lines){
     }
 }
 
-
-void IniComplementConfigurator::configureGateSchedApps(vector<string>& lines){
-    for(const auto& line : lines){
-        vector<string> elements = splitString(line, ",");
-        assert(elements.size() >= 8);
-
-    }
-}
+//pcp,gateIndex,application,source,destination,packet_length(bit),packet_interval(us),max_latency(us)
+//7,7,app[0],d3,d0,12000,1000,500
+//7,7,app[1],d3,d0,12000,500,500
+//void IniComplementConfigurator::configureGateSchedApps(vector<string>& lines){
+//    cValueArray* identMaps = new cValueArray();
+//    for(const auto& line : lines){
+//        vector<string> elements = splitString(line, ",");
+//        assert(elements.size() >= 8);
+//        int pcp = stoi(elements[0]);
+//        int gateIdx = stoi(elements[1]);
+//        string app = elements[2];
+//        string src = elements[3];
+//        string dst = elements[4];
+//        int packetLength = stoi(elements[5]);
+//        int packetInterval = stoi(elements[6]);
+//        int maxLatency = stoi(elements[7]);
+//
+//        cValueMap* gateSchedMap = new cValueMap();
+//        gateSchedMap->set("pcp", pcp);
+//    }
+//}
 
 void IniComplementConfigurator::configureWrapper(
         vector<string>& lines, string& confName){
@@ -174,7 +193,8 @@ void IniComplementConfigurator::configureWrapper(
     } else if (confName == "stream_identifier"){
         configureStreamIdenApps(lines);
     } else if (confName == "gate_schedule"){
-        configureGateSchedApps(lines);
+//        configureGateSchedApps(lines);
+        // do nothing now
     } else {
         throw "invalid confName";
     }
