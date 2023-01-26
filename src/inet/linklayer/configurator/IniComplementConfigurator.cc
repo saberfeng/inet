@@ -116,13 +116,44 @@ void IniComplementConfigurator::configureEncDecApps(vector<string>& lines){
     }
 }
 
+//stream, destPort
+//FG0,1000
+//FG1,1001
 void IniComplementConfigurator::configureStreamIdenApps(vector<string>& lines){
+    cValueArray* identMaps = new cValueArray();
     for(const auto& line : lines){
         vector<string> elements = splitString(line, ",");
-        assert(elements.size() >= 8);
+        assert(elements.size() >= 2);
+        string stream = elements[0];
+        string destPort = elements[1];
 
+        cValueMap* identMap = new cValueMap();
+        identMap->set("stream", stream);
+
+        cDynamicExpression expr = cDynamicExpression();
+        string pattern = string("udp.destPort == ") + destPort;
+        expr.parse(pattern.c_str());
+        identMap->set("packetFilter", expr);
+        identMaps->add(identMap);
+    }
+
+    // iterate through all end-hosts
+    cModule* net = this->findModuleByPath(getNetName().c_str());
+    for (cModule::SubmoduleIterator it(net); !it.end(); ++it) {
+        cModule *sub = *it;
+        string subFullClassName = sub->getNedTypeAndFullName();
+        vector<string> splitted = splitString(subFullClassName, ".");
+        string subClassName = splitted[splitted.size()-1];
+        if(subClassName == "TsnDevice"){
+            string subName = sub->getFullName();
+            stringstream ss;
+            ss << getNetName() << "." << subName << ".bridging.streamIdentifier.identifier";
+            cModule* identifier = this->findModuleByPath(ss.str().c_str());
+            identifier->par("mapping") = identMaps;
+        }
     }
 }
+
 
 void IniComplementConfigurator::configureGateSchedApps(vector<string>& lines){
     for(const auto& line : lines){
