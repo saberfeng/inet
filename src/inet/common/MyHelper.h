@@ -2,7 +2,7 @@
 #ifndef __INET_MYHELPER_H
 #define __INET_MYHELPER_H
 
-
+#include <omnetpp.h>
 #include <string>
 #include <vector>
 
@@ -21,8 +21,9 @@ simtime_t us_to_s(double us_time);
 simtime_t str_ns_to_s(string& str_ns_time);
 
 simtime_t ns_to_s(double ns_time);
+
+string getNetName(cModule* mod);
+
 }
-
-
 
 #endif

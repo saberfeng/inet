@@ -16,6 +16,11 @@ void DelaySignalSource::initialize()
 void DelaySignalSource::handleMessage(cMessage *msg)
 {
     if (numActionToDo < 0 || numActionDone < numActionToDo) {
+
+        stringstream ssApp;
+        ssApp << getNetName() << "." << srcDevice << ".app[" << srcAppIdx << "]";
+        cModule* application = this->findModuleByPath(ssApp.str().c_str());
+
         cModule* targetModule = this->findModuleByPath("TsnDumbbellNetwork.switch1.eth[2].macLayer.server");
 
         targetModule->par("effectStartTime") = simTime().dbl(); // apply delay from now

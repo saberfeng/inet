@@ -3,8 +3,13 @@
 
 #include "inet/common/INETDefs.h"
 #include "inet/queueing/contract/ISignalSource.h"
+#include "inet/common/MyHelper.h"
+#include <iostream>
+
 
 namespace inet {
+
+using std::stringstream;
 
 class INET_API DelaySignalSource : public cSimpleModule, public virtual ISignalSource
 {

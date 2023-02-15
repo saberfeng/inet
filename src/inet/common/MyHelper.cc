@@ -32,4 +32,11 @@ simtime_t str_ns_to_s(string& str_ns_time){
 simtime_t ns_to_s(double ns_time){
     return ns_time / double(1e9);
 }
+
+string getNetName(cModule* mod){
+    string path = mod->getFullPath(); // TsnNetSmallRing.iniComplementConfigurator
+    return splitString(path, ".")[0];
+}
+
+
 }
