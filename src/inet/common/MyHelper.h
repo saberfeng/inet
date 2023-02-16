@@ -11,6 +11,7 @@ namespace inet{
 using std::string;
 using std::vector;
 using omnetpp::simtime_t;
+using omnetpp::cModule;
 
 vector<string> splitString(string txt, string delimiter);
 
@@ -24,6 +25,7 @@ simtime_t ns_to_s(double ns_time);
 
 string getNetName(cModule* mod);
 
+bool isNetworkDeviceName(const char *moduleName);
 }
 
 #endif

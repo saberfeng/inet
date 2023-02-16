@@ -38,5 +38,16 @@ string getNetName(cModule* mod){
     return splitString(path, ".")[0];
 }
 
+bool isNetworkDeviceName(const char *moduleName)
+{
+    if (moduleName[0] == 'd' || moduleName[0] == 's') {
+        const char *number = moduleName + 1;
+        while (isdigit(*number))
+            number++;
+        if (*number == '\0')
+            return true;
+    }
+    return false;
+}
 
 }
