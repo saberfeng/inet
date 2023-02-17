@@ -1,8 +1,10 @@
-- How to generate random error, and make sure in a period, only generate one error
+[x] How to generate random error, and make sure in a period, only generate one error
 
-- add bitrate parameter to .ned files
-- does end hosts need bitrate parameters?
+[x] add bitrate parameter to .ned files
+[x] does end hosts need bitrate parameters?
 
-- add IN, Orion topo .ned files
+[] add IN, Orion topo .ned files
 
-- key problem: when slot not long enough to transmit, frame won't be transmitted
+[] key problem: when slot not long enough to transmit, frame won't be transmitted
+
+[] always open gates (0~6) takes too long running time, Modify PeriodicGate to eliminate 0s switching actions 

@@ -116,7 +116,8 @@ void RobustnessDropper::parseGlobalSafe(){
 
 long long RobustnessDropper::getModNow() const {
     simtime_t now = simTime();
-    long long nsNow = (now * 1e9).dbl();
+    // long long nsNow = (now * 1e9).dbl(); // 10^19ps, too high precision for SimTime
+    long long nsNow = now.dbl() * 1e9;
     return nsNow % hypercycle;
 }
 
