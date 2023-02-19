@@ -1,0 +1,134 @@
+OMNeT++ Discrete Event Simulation  (C) 1992-2022 Andras Varga, OpenSim Ltd.
+Version: 6.0.1, build: 220831-e4f07d04b8, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from ../../../../examples:  186
+Loading NED files from ../../..:  79
+Loading NED files from ../../../../src:  1176
+Loading NED files from ../../../../tests/validation:  5
+Loading NED files from ../../../../tests/networks:  6
+Loading NED files from ../../../../tutorials:  20
+
+Preparing for running configuration General, run #0...
+Assigned runID=General-0-20230219-18:51:19-66473
+Setting up network "inet.showcases.tsn.robustness.TsnNetSmallRing"...
+Recording eventlog to file `results/General-#0.elog'...
+Initializing...
+
+Running simulation...
+** Event #0   t=0   Elapsed: 8e-06s (0m 00s)  0% completed  (0% total)
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 254   present: 254   in FES: 91
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d3.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s0.eth[1].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[2].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d0.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.d2.eth[0].macLayer.server
+random server picked:(inet::queueing::RcvDelaySignalServer)TsnNetSmallRing.s1.eth[1].macLayer.server
+** Event #139101   t=1   Elapsed: 0.800381s (0m 00s)  100% completed  (100% total)
+     Speed:     ev/sec=173795   simsec/sec=1.24942   ev/simsec=139101
+     Messages:  created: 40639   present: 263   in FES: 84
+
+<!> Simulation time limit reached -- at t=1s, event #139101
+
+Calling finish() at end of Run #0...
+undisposed object: (omnetpp::cValueArray) TsnNetSmallRing.iniComplementConfigurator. -- check module destructor
+undisposed object: (omnetpp::cValueArray) TsnNetSmallRing.iniComplementConfigurator. -- check module destructor
+
+End.
