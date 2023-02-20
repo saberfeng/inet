@@ -76,8 +76,13 @@ void DelaySignalSource::handleMessage(cMessage *msg)
 
         cModule* randServer = delaySvrs[distribution(randGenerator)];
 
-        std::cout << "#" << numActionDone << " random server picked:" << randServer->getFullPath()
-                  << " simtime:" << simTime() << std::endl;
+        std::cout << "Log, Random Server Picked, " 
+              << randServer->getParentModule()->getParentModule()->getFullPath()
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) 
+              << ", #" << numActionDone << std::endl;
+
+        // std::cout << "#" << numActionDone << " random server picked:" << randServer->getFullPath()
+        //           << " simtime:" << simTime() << std::endl;
         randServer->par("effectStartTime") = simTime().dbl(); // apply delay from now
 //        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
         randServer->par("numDelayPackets") = 1; // this change expire after 1000us

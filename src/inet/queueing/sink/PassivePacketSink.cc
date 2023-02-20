@@ -76,6 +76,10 @@ void PassivePacketSink::pushPacket(Packet *packet, cGate *gate)
 void PassivePacketSink::consumePacket(Packet *packet)
 {
     EV_INFO << "Consuming packet" << EV_FIELD(packet) << EV_ENDL;
+    std::cout << "Log, Consuming packet, " 
+              << this->getParentModule()->getParentModule()->getName() 
+              << "<-"  << packet->getName() 
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) << std::endl;
     numProcessedPackets++;
     processedTotalLength += packet->getDataLength();
     updateDisplayString();

@@ -67,6 +67,12 @@ void RcvDelaySignalServer::scheduleProcessingTimer()
 //    auto processingBitrate = bps(par("processingBitrate"));
 //    delayLength += s(packet->getTotalLength() / processingBitrate).get();
     scheduleClockEventAfter(delayLength, processingTimer);
+    if (delayLength > 0){
+        std::cout << "Log, Delay Attack, " 
+              << this->getParentModule()->getParentModule()->getParentModule()->getName() 
+              << "->" << packet->getName() 
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)<< std::endl;
+    }
 }
 
 bool RcvDelaySignalServer::canStartProcessingPacket()
@@ -90,6 +96,10 @@ void RcvDelaySignalServer::startProcessingPacket()
 void RcvDelaySignalServer::endProcessingPacket()
 {
     EV_INFO << "Processing packet ended" << EV_FIELD(packet) << EV_ENDL;
+    std::cout << "Log, Dispacth packet, " 
+              << this->getParentModule()->getParentModule()->getParentModule()->getName()
+              << "->" << packet->getName() 
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) << std::endl;
     simtime_t packetProcessingTime = simTime() - processingTimer->getSendingTime();
     simtime_t bitProcessingTime = packetProcessingTime / packet->getBitLength();
     insertPacketEvent(this, packet, PEK_PROCESSED, bitProcessingTime);

@@ -11,6 +11,7 @@
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/PassivePacketSinkBase.h"
 #include "inet/queueing/contract/IActivePacketSource.h"
+#include <iostream>
 
 namespace inet {
 
