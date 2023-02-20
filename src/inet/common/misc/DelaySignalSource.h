@@ -17,9 +17,9 @@ class INET_API DelaySignalSource : public cSimpleModule, public virtual ISignalS
 {
   protected:
     simtime_t startTime;
-    int numActionToDo;
+    int numActionToDo = 0;
     int numActionDone = 0;
-    vector<cModule*> delaySvrs; // ethernet interfaces with 802.1Qbv schedules
+    vector<cModule*> delaySvrs;
 
     std::mt19937 randGenerator;
     std::uniform_int_distribution<> distribution;

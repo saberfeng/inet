@@ -75,7 +75,9 @@ void DelaySignalSource::handleMessage(cMessage *msg)
     if (numActionToDo < 0 || numActionDone < numActionToDo) {
 
         cModule* randServer = delaySvrs[distribution(randGenerator)];
-        std::cout << "random server picked:" << randServer->getClassAndFullPath() << std::endl;
+
+        std::cout << "#" << numActionDone << " random server picked:" << randServer->getFullPath()
+                  << " simtime:" << simTime() << std::endl;
         randServer->par("effectStartTime") = simTime().dbl(); // apply delay from now
 //        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
         randServer->par("numDelayPackets") = 1; // this change expire after 1000us
