@@ -82,7 +82,7 @@ void RobustnessDropper::parseIngressWindows(){
 }
 
 void RobustnessDropper::parseGlobalSafe(){
-    globalSafeIntervals.clear();
+    // globalSafeIntervals.clear();
     //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
     vector<string> rawMaps = splitString(rawGlobalSafeIntervals, string(","));
     for(auto& rawMap : rawMaps){ //rawMap->"201000-322000:121000-122000 122000-334000"
@@ -125,15 +125,33 @@ void RobustnessDropper::updateCurIdx(){
     curIngressWinIdx = (curIngressWinIdx+1) % ingressWindows.size();
 }
 
+void RobustnessDropper::logAction(
+    string actionName, const Packet *packet, long long nsModNow, 
+    const Window& curInWindow, const vector<Window>& gsIntervals) const {
+
+    std::cout << "Log, " << actionName << ", " 
+              << this->getParentModule()->getParentModule()->getParentModule()->getParentModule()->getName() 
+                    << ".." << this->getName() 
+              << "->"  << packet->getName() 
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << ", nsModNow:" << nsModNow
+              << ", curInWin:" << string(curInWindow)
+              << ", gsIntervals:" << gsIntervals
+              << std::endl;
+}
+
 bool RobustnessDropper::matchesPacket(const Packet *packet) const{
     long long nsModNow = getModNow();
     auto& curInWindow = ingressWindows[curIngressWinIdx];
-    auto& globalSafeIntervals = globalSafe.at(curIngressWinIdx);
+    auto& gsIntervals = globalSafe.at(curIngressWinIdx);
 
-    if((nsModNow >= curInWindow.start && nsModNow < curInWindow.end) || 
-      (checkTimeInAnyWindow(nsModNow, globalSafeIntervals))){
+    if(nsModNow >= curInWindow.start && nsModNow < curInWindow.end){
+        return true;
+    } else if (checkTimeInAnyWindow(nsModNow, gsIntervals)){
+        logAction(string("Hit global safe"), packet, nsModNow, curInWindow, gsIntervals);
         return true;
     } else {
+        logAction(string("Dropping packet"), packet, nsModNow, curInWindow, gsIntervals);
         return false;
     }
 }
@@ -158,7 +176,6 @@ void RobustnessDropper::dropPacket(Packet *packet)
              << EV_FIELD(numDropped)
              << EV_FIELD(packet->getFullName())
              << EV_FIELD(ingressWindows)
-             << EV_FIELD(globalSafeIntervals)
              << EV_ENDL;
     numPackets++;
     numDropped++;
@@ -172,7 +189,7 @@ void RobustnessDropper::processPacket(Packet *packet)
              << EV_FIELD(numPackets)
              << EV_FIELD(packet->getFullName())
              << EV_FIELD(ingressWindows)
-             << EV_FIELD(globalSafeIntervals) << EV_ENDL;
+             << EV_ENDL;
     numPackets++;
 }
 

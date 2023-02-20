@@ -14,6 +14,7 @@
 #include "inet/common/MyHelper.h"
 #include <ostream>
 #include <unordered_map>
+#include <iostream>
 
 namespace inet{
 namespace queueing{
@@ -65,7 +66,7 @@ protected:
 
     // using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;
     using IngressIdxToIntervalMap = unordered_map<int, vector<Window>>;
-    vector<Window> globalSafeIntervals;
+    // vector<Window> globalSafeIntervals;
     IngressIdxToIntervalMap globalSafe;
 
     virtual void initialize(int stage) override;
@@ -78,6 +79,8 @@ protected:
     virtual bool checkTimeInAnyWindow(long long time, vector<Window> windows) const;
     virtual long long getModNow() const; // current sim time mod hypercycle (in ns)
     virtual void updateCurIdx();
+    void logAction(string actionName, const Packet *packet, long long nsModNow, 
+                   const Window& curInWindow, const vector<Window>& gsIntervals) const;
 public:
     virtual bool matchesPacket(const Packet *packet) const override; // match->process, not match->drop
 
