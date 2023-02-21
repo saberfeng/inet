@@ -9,7 +9,7 @@ void DelaySignalSource::initialize()
 {
     startTime = par("startTime");
 //    endTime = par("endTime");
-    numActionToDo = par("numActionToDo");
+    numSignalToSend = par("numSignalToSend");
     scheduleAt(startTime, new cMessage("timer"));
     collectApplicableDevices();
 
@@ -72,23 +72,20 @@ void DelaySignalSource::collectApplicableDevices(){
 void DelaySignalSource::handleMessage(cMessage *msg)
 {
     // numActionToDo == -1 : repeat signal forever
-    if (numActionToDo < 0 || numActionDone < numActionToDo) {
+    if (numSignalToSend < 0 || numSignalSent < numSignalToSend) {
 
         cModule* randServer = delaySvrs[distribution(randGenerator)];
 
         std::cout << "Log, Random Server Picked, " 
               << randServer->getParentModule()->getParentModule()->getFullPath()
               << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) 
-              << ", #" << numActionDone << std::endl;
+              << ", #" << numSignalSent << std::endl;
 
-        // std::cout << "#" << numActionDone << " random server picked:" << randServer->getFullPath()
-        //           << " simtime:" << simTime() << std::endl;
         randServer->par("effectStartTime") = simTime().dbl(); // apply delay from now
 //        targetModule->par("effectDuration") = 0.001; // this change expire after 1000us
-        randServer->par("numDelayPackets") = 1; // this change expire after 1000us
-        randServer->par("delayLength") = 0.000001; // 1us
-
-        numActionDone++;
+        randServer->par("numDelayPackets") = par("affectedPktsPerSignal"); // this change expire after 1000us
+        randServer->par("delayLength") = par("delayLength"); // 1us
+        numSignalSent++;
         scheduleAfter(par("interval"), msg);
     }
     else {

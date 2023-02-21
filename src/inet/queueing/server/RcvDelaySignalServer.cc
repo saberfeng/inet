@@ -71,7 +71,9 @@ void RcvDelaySignalServer::scheduleProcessingTimer()
         std::cout << "Log, Delay Attack, " 
               << this->getParentModule()->getParentModule()->getParentModule()->getName() 
               << "->" << packet->getName() 
-              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)<< std::endl;
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << ", delay:" << int(delayLength.dbl()*1e6) << "us"
+              << std::endl;
     }
 }
 

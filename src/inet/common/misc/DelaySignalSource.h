@@ -17,8 +17,8 @@ class INET_API DelaySignalSource : public cSimpleModule, public virtual ISignalS
 {
   protected:
     simtime_t startTime;
-    int numActionToDo = 0;
-    int numActionDone = 0;
+    int numSignalToSend = 0;
+    int numSignalSent = 0;
     vector<cModule*> delaySvrs;
 
     std::mt19937 randGenerator;

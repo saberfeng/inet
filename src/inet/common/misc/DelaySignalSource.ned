@@ -23,7 +23,9 @@ simple DelaySignalSource like ISignalSource
         @display("i=block/cogwheel");
         @signal[delaySignal](type=long);
         double startTime @unit(s) = default(0us);
-        int numActionToDo = default(0);
+        int numSignalToSend = default(0);
+        int affectedPktsPerSignal = default(1);
+        double delayLength @unit(s) = default(1us);
         volatile double interval @unit(s) = default(2000us);
 }
 

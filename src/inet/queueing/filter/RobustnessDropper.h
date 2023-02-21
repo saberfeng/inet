@@ -55,13 +55,13 @@ protected:
                 return this->start == rhs.start && this->end == rhs.end;
             }
     };
-    class WindowKeyCompare
-    { // just used as a map key compare function
-       bool operator() (const Window& lhs, const Window& rhs) const
-       {
-           return lhs.start < rhs.start;
-       }
-    };
+    // class WindowKeyCompare
+    // { // just used as a map key compare function
+    //    bool operator() (const Window& lhs, const Window& rhs) const
+    //    {
+    //        return lhs.start < rhs.start;
+    //    }
+    // };
     vector<Window> ingressWindows;
 
     // using WindowToIntervalsMap = unordered_map<Window, vector<Window>, WindowKeyCompare>;

@@ -131,7 +131,7 @@ void RobustnessDropper::logAction(
 
     std::cout << "Log, " << actionName << ", " 
               << this->getParentModule()->getParentModule()->getParentModule()->getParentModule()->getName() 
-                    << ".." << this->getName() 
+                    << ".." << this->getName() << "[" << this->getIndex() << "]"
               << "->"  << packet->getName() 
               << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
               << ", nsModNow:" << nsModNow
