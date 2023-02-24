@@ -1,7 +1,7 @@
 ,client_app_conf,lines:2
 src_device,src_app_idx,display-name,destAddress,destPort,packetLength(bit),prodInterval(us),initialOffset(us)
 d3,0,FG0,d0,1000,11536,1000,0
-d3,1,FG1,d0,1001,11536,500,200000
+d3,1,FG1,d0,1001,11536,500,200
 
 ,server_app_conf,lines:2
 dst_device,app_idx,display-name,localPort

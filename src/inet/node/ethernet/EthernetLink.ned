@@ -15,8 +15,9 @@ import ned.DatarateChannel;
 //
 channel EthernetLink extends DatarateChannel
 {
-    double length @unit(m) = default(10m);
-    delay = replaceUnit(length / 2e8, "s");
+    // double length @unit(m) = default(10m);
+    // delay = replaceUnit(length / 2e8, "s");
+    delay = 1us;
 }
 
 //
