@@ -145,7 +145,7 @@ bool RobustnessDropper::matchesPacket(const Packet *packet) const{
     auto& curInWindow = ingressWindows[curIngressWinIdx];
     auto& gsIntervals = globalSafe.at(curIngressWinIdx);
 
-    if(nsModNow >= curInWindow.start && nsModNow < curInWindow.end){
+    if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
         logAction(string("Hit ingress window"), packet, nsModNow, curInWindow, gsIntervals);
         return true;
     } else if (checkTimeInAnyWindow(nsModNow, gsIntervals)){
