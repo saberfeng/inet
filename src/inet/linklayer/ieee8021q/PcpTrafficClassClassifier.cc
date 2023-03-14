@@ -25,39 +25,40 @@ void PcpTrafficClassClassifier::initialize(int stage)
 
 int PcpTrafficClassClassifier::classifyPacket(Packet *packet)
 {
-    int pcp = -1;
-    switch (*mode) {
-        case 'r': {
-            auto pcpReq = packet->findTag<PcpReq>();
-            if (pcpReq != nullptr)
-                pcp = pcpReq->getPcp();
-            break;
-        }
-        case 'i': {
-            auto pcpInd = packet->findTag<PcpInd>();
-            if (pcpInd != nullptr)
-                pcp = pcpInd->getPcp();
-            break;
-        }
-        case 'b': {
-            auto pcpReq = packet->findTag<PcpReq>();
-            if (pcpReq != nullptr)
-                pcp = pcpReq->getPcp();
-            else {
-                auto pcpInd = packet->findTag<PcpInd>();
-                if (pcpInd != nullptr)
-                    pcp = pcpInd->getPcp();
-            }
-            break;
-        }
-    }
-    if (pcp != -1) {
-        int numTrafficClasses = gateSize("out");
-        auto pcpToGateIndex = check_and_cast<cValueArray *>(mapping->get(pcp).objectValue());
-        return pcpToGateIndex->get(numTrafficClasses - 1);
-    }
-    else
-        return defaultGateIndex;
+    // int pcp = -1;
+    // switch (*mode) {
+    //     case 'r': {
+    //         auto pcpReq = packet->findTag<PcpReq>();
+    //         if (pcpReq != nullptr)
+    //             pcp = pcpReq->getPcp();
+    //         break;
+    //     }
+    //     case 'i': {
+    //         auto pcpInd = packet->findTag<PcpInd>();
+    //         if (pcpInd != nullptr)
+    //             pcp = pcpInd->getPcp();
+    //         break;
+    //     }
+    //     case 'b': {
+    //         auto pcpReq = packet->findTag<PcpReq>();
+    //         if (pcpReq != nullptr)
+    //             pcp = pcpReq->getPcp();
+    //         else {
+    //             auto pcpInd = packet->findTag<PcpInd>();
+    //             if (pcpInd != nullptr)
+    //                 pcp = pcpInd->getPcp();
+    //         }
+    //         break;
+    //     }
+    // }
+    // if (pcp != -1) {
+    //     int numTrafficClasses = gateSize("out");
+    //     auto pcpToGateIndex = check_and_cast<cValueArray *>(mapping->get(pcp).objectValue());
+    //     return pcpToGateIndex->get(numTrafficClasses - 1);
+    // }
+    // else
+    //     return defaultGateIndex;
+    return 7;
 }
 
 } // namespace inet
