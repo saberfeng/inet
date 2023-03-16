@@ -26,6 +26,8 @@ simtime_t ns_to_s(double ns_time);
 string getNetName(cModule* mod);
 
 bool isNetworkDeviceName(const char *moduleName);
+
+const char* getParentParentName(cModule* mod);
 }
 
 #endif

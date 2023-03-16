@@ -74,7 +74,7 @@ void ActivePacketSource::producePacket()
     auto packet = createPacket();
     EV_INFO << "Producing packet" << EV_FIELD(packet) << EV_ENDL;
     std::cout << "Log, Producing packet, " 
-              << this->getParentModule()->getParentModule()->getName() 
+              << getParentParentName(this)
               << "->"  << packet->getName() 
               << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) << std::endl;
     emit(packetPushedSignal, packet);

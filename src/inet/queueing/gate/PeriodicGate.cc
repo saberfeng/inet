@@ -110,8 +110,9 @@ bool PeriodicGate::canPacketFlowThrough(Packet *packet) const
     else if (packet == nullptr)
         return false;
     else {
-        clocktime_t flowEndTime = getClockTime() + s((packet->getDataLength() + extraLength) / bitrate).get() + SIMTIME_AS_CLOCKTIME(extraDuration);
-        return !changeTimer->isScheduled() || flowEndTime <= getArrivalClockTime(changeTimer);
+        // clocktime_t flowEndTime = getClockTime() + s((packet->getDataLength() + extraLength) / bitrate).get() + SIMTIME_AS_CLOCKTIME(extraDuration);
+        // return !changeTimer->isScheduled() || flowEndTime <= getArrivalClockTime(changeTimer);
+        return !changeTimer->isScheduled();
     }
 }
 

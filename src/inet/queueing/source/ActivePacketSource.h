@@ -11,6 +11,7 @@
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/ActivePacketSourceBase.h"
 #include <iostream>
+#include "inet/common/MyHelper.h"
 
 namespace inet {
 

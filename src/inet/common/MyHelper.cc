@@ -50,4 +50,14 @@ bool isNetworkDeviceName(const char *moduleName)
     return false;
 }
 
+const char* getParentParentName(cModule* mod){
+    if (!mod->getParentModule()){
+        return mod->getName();
+    } else if (!mod->getParentModule()->getParentModule()){
+        return mod->getParentModule()->getName();
+    } else {
+        return mod->getParentModule()->getParentModule()->getName();
+    }
+}
+
 }
