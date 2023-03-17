@@ -75,7 +75,7 @@ void DelaySignalSource::handleMessage(cMessage *msg)
     if (numSignalToSend < 0 || numSignalSent < numSignalToSend) {
 
         // cModule* randServer = delaySvrs[distribution(randGenerator)];
-        cModule* randServer = this->findModuleByPath("TsnNetSmallRing.s1.eth[2].macLayer.server"); // debug
+        cModule* randServer = this->findModuleByPath("TsnNetSmallRing.d3.eth[0].macLayer.server"); // debug
 
         std::cout << "Log, Random Server Picked, " 
               << randServer->getParentModule()->getParentModule()->getFullPath()
