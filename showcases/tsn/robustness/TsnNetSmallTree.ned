@@ -23,7 +23,7 @@ network TsnNetSmallTree extends TsnNetworkBase
 {
     parameters:
         d*.eth[0].bitrate = default(100Mbps);
-        s*.eth[0].bitrate = default(100Mbps);
+        s*.eth[0..3].bitrate = default(100Mbps);
     submodules:
         d0: <default("TsnDevice")> like IEthernetNetworkNode {
             @display("p=300,150");
@@ -38,7 +38,7 @@ network TsnNetSmallTree extends TsnNetworkBase
             @display("p=900,350");
         }
         s0: <default("TsnSwitch")> like IEthernetNetworkNode {
-            @display("p=500,250");
+            @display("p=607,247");
         }
     connections:
         d0.ethg++ <--> EthernetLink <--> s0.ethg++;
