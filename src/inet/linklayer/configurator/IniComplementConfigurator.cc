@@ -26,7 +26,7 @@ string IniComplementConfigurator::getNetName(){
 void IniComplementConfigurator::configureClientApps(vector<string>& lines){
     for(const auto& line : lines){
         vector<string> elements = splitString(line, ",");
-        assert(elements.size() >= 8);
+        assert(elements.size() >= 9);
 
         string srcDevice = elements[0];
         int srcAppIdx = stoi(elements[1]);
@@ -36,6 +36,7 @@ void IniComplementConfigurator::configureClientApps(vector<string>& lines){
         int packetLength = stoi(elements[5]);
         double prodInterval = std::stod(elements[6]) / 1e6; // us -> s
         double initOffset = std::stod(elements[7]) / 1e6; // us -> s
+        int srcPort = stoi(elements[8]);
 
         stringstream ssApp;
         ssApp << getNetName() << "." << srcDevice << ".app[" << srcAppIdx << "]";
@@ -50,6 +51,7 @@ void IniComplementConfigurator::configureClientApps(vector<string>& lines){
         application->setDisplayName(displayName.c_str());
         appIo->par("destAddress") = dstAddress;
         appIo->par("destPort") = dstPort;
+        appIo->par("localPort") = srcPort;
         appSource->par("packetLength") = packetLength;
         appSource->par("productionInterval") = prodInterval;
         appSource->par("initialProductionOffset") = initOffset;
