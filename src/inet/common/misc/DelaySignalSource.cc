@@ -13,8 +13,7 @@ void DelaySignalSource::initialize()
     scheduleAt(startTime, new cMessage("timer"));
     collectApplicableDevices();
 
-    std::random_device rd;
-    randGenerator = std::mt19937(rd());
+    randGenerator = std::mt19937(par("seed"));
     distribution = std::uniform_int_distribution<>(0, delaySvrs.size() - 1);
 }
 

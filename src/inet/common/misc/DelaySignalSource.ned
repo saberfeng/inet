@@ -27,5 +27,6 @@ simple DelaySignalSource like ISignalSource
         int affectedPktsPerSignal = default(1);
         double delayLength @unit(s) = default(1us);
         volatile double interval @unit(s) = default(2000us);
+        int seed = default(0);
 }
 
