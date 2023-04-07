@@ -81,6 +81,8 @@ protected:
     virtual void updateCurIdx();
     void logAction(string actionName, const Packet *packet, long long nsModNow, 
                    const Window& curInWindow, const vector<Window>& gsIntervals) const;
+    void logAction(string actionName, const Packet *packet, long long nsModNow, 
+                   const Window& curInWindow) const;
 public:
     virtual bool matchesPacket(const Packet *packet) const override; // match->process, not match->drop
 

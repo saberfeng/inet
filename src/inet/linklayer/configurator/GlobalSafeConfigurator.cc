@@ -129,14 +129,19 @@ void GlobalSafeConfigurator::configIngressSchedGlobalSafe(){
             filter->par("hypercycle") = ingressSched.hypercycle;
             filter->par("ingressWindows") = ingressSched.rawWindows;
 
-            IngressSchedule& globalSafe =globalSafeMap.at(nodeName).at(flowId);
-            filter->par("globalSafeIntervals") =globalSafe.rawWindows;
+            if(!globalSafeMap.empty()){
+                IngressSchedule& globalSafe =globalSafeMap.at(nodeName).at(flowId);
+                filter->par("globalSafeIntervals") =globalSafe.rawWindows;
+            }
         }
     }
 }
 
 
 void GlobalSafeConfigurator::parseGlobalSafeFile(){
+    if(globalSafeInput.empty()){
+        return;
+    }
     std::ifstream globalSafeInputFile(globalSafeInput);
     string line;
     getline(globalSafeInputFile, line); // skip the 

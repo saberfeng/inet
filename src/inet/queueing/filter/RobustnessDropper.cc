@@ -82,6 +82,9 @@ void RobustnessDropper::parseIngressWindows(){
 }
 
 void RobustnessDropper::parseGlobalSafe(){
+    if(rawGlobalSafeIntervals.empty()){
+        return; // when applying all-filter policy, no global-safe input
+    }
     // globalSafeIntervals.clear();
     //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
     vector<string> rawMaps = splitString(rawGlobalSafeIntervals, string(","));
@@ -141,20 +144,45 @@ void RobustnessDropper::logAction(
               << std::endl;
 }
 
+void RobustnessDropper::logAction(
+    string actionName, const Packet *packet, long long nsModNow, 
+    const Window& curInWindow) const {
+
+    std::cout << "Log, " << actionName << ", " 
+              << this->getParentModule()->getParentModule()->getParentModule()->getParentModule()->getName() 
+                    << ".." << this->getName() << "[" << this->getIndex() << "]"
+              << "->"  << packet->getName() 
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << ", nsModNow:" << nsModNow
+              << ", curInWin:" << string(curInWindow)
+              << std::endl;
+}
+
 bool RobustnessDropper::matchesPacket(const Packet *packet) const{
     long long nsModNow = getModNow();
     auto& curInWindow = ingressWindows[curIngressWinIdx];
-    auto& gsIntervals = globalSafe.at(curIngressWinIdx);
+    
+    if(globalSafe.empty()){
+        if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
+            logAction(string("Hit ingress window"), packet, nsModNow, curInWindow);
+            return true;
+        } else {
+            logAction(string("Dropping packet"), packet, nsModNow, curInWindow);
+            return false;
+        }
+    }else{
+        auto& gsIntervals = globalSafe.at(curIngressWinIdx);
 
-    if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
-        logAction(string("Hit ingress window"), packet, nsModNow, curInWindow, gsIntervals);
-        return true;
-    } else if (checkTimeInAnyWindow(nsModNow, gsIntervals)){
-        logAction(string("Hit global safe"), packet, nsModNow, curInWindow, gsIntervals);
-        return true;
-    } else {
-        logAction(string("Dropping packet"), packet, nsModNow, curInWindow, gsIntervals);
-        return false;
+        if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
+            logAction(string("Hit ingress window"), packet, nsModNow, curInWindow, gsIntervals);
+            return true;
+        } else if (checkTimeInAnyWindow(nsModNow, gsIntervals)){
+            logAction(string("Hit global safe"), packet, nsModNow, curInWindow, gsIntervals);
+            return true;
+        } else {
+            logAction(string("Dropping packet"), packet, nsModNow, curInWindow, gsIntervals);
+            return false;
+        }
     }
 }
 
