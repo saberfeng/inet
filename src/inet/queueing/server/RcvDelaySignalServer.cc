@@ -12,21 +12,21 @@ Define_Module(RcvDelaySignalServer);
 
 RcvDelaySignalServer::~RcvDelaySignalServer()
 {
-    cancelAndDelete(serveTimer);
-    cancelAndDeleteClockEvent(processingTimer);
-    delete packet;
+    // delete all packets in the procTimerToPacketMap
+    for (auto it = procTimerToPacketMap.begin(); it != procTimerToPacketMap.end(); it++){
+        delete it->second;
+    }
+    // cancel and delete all timers
+    for (auto it = procTimerToPacketMap.begin(); it != procTimerToPacketMap.end(); it++){
+        cancelAndDeleteClockEvent(it->first);
+    }
 }
 
 void RcvDelaySignalServer::initialize(int stage)
 {
     ClockUserModuleMixin::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
-        int serveSchedulingPriority = par("serveSchedulingPriority");
-        if (serveSchedulingPriority != -1) {
-            serveTimer = new cMessage("ServeTimer");
-            serveTimer->setSchedulingPriority(serveSchedulingPriority);
-        }
-        processingTimer = new ClockEvent("ProcessingTimer");
+        // processingTimer = new ClockEvent("ProcessingTimer");
     }
 }
 
@@ -39,23 +39,22 @@ bool RcvDelaySignalServer::isNowInEffect(){
 
 void RcvDelaySignalServer::handleMessage(cMessage *message)
 {
-    if (message == serveTimer) {
-        startProcessingPacket();
-        scheduleProcessingTimer();
-    }
-    else if (message == processingTimer) {
-        endProcessingPacket();
-        if (canStartProcessingPacket()) {
-            startProcessingPacket();
-            scheduleProcessingTimer();
+    // check if the message is a ClockEvent* in the procTimerToPacketMap
+    ClockEvent* processingTimer = check_and_cast<ClockEvent*>(message);
+    if (procTimerToPacketMap.find(processingTimer) != procTimerToPacketMap.end()){
+        // if so, then it is a processing timer
+        Packet* packet = procTimerToPacketMap[processingTimer];
+        endProcessingPacket(packet, processingTimer);
+        if (canStartProcessingPacket()) { // prepare for the next waiting packet
+            Packet* packet = startProcessingPacket();
+            scheduleProcessingTimer(packet);
         }
         updateDisplayString();
-    }
-    else
+    } else
         throw cRuntimeError("Unknown message");
 }
 
-void RcvDelaySignalServer::scheduleProcessingTimer()
+void RcvDelaySignalServer::scheduleProcessingTimer(Packet* packet)
 {
     clocktime_t delayLength;
     if(isNowInEffect()){
@@ -64,6 +63,11 @@ void RcvDelaySignalServer::scheduleProcessingTimer()
     } else {
         delayLength = 0; // out of effect time, no delay
     }
+
+    std::string processingTimerName = std::string("ProcessingTimer-")+packet->getName();
+    ClockEvent* processingTimer = new ClockEvent(processingTimerName.c_str());
+    procTimerToPacketMap[processingTimer] = packet;
+
 //    auto processingBitrate = bps(par("processingBitrate"));
 //    delayLength += s(packet->getTotalLength() / processingBitrate).get();
     scheduleClockEventAfter(delayLength, processingTimer);
@@ -83,19 +87,16 @@ bool RcvDelaySignalServer::canStartProcessingPacket()
            consumer->canPushSomePacket(outputGate->getPathEndGate());
 }
 
-void RcvDelaySignalServer::startProcessingPacket()
+Packet* RcvDelaySignalServer::startProcessingPacket()
 {
-//    // DEBUG
-//    if(isDebugTargetModule()){
-//        cout << "**********" << getNedTypeAndFullPath() << " pulling" << endl;
-//    }
-    packet = provider->pullPacket(inputGate->getPathStartGate());
+    Packet* packet = provider->pullPacket(inputGate->getPathStartGate());
     take(packet);
     emit(packetPulledSignal, packet);
     EV_INFO << "Processing packet started" << EV_FIELD(packet) << EV_ENDL;
+    return packet;
 }
 
-void RcvDelaySignalServer::endProcessingPacket()
+void RcvDelaySignalServer::endProcessingPacket(Packet* packet, ClockEvent* processingTimer)
 {
     EV_INFO << "Processing packet ended" << EV_FIELD(packet) << EV_ENDL;
     std::cout << "Log, Dispacth packet, " 
@@ -119,46 +120,31 @@ void RcvDelaySignalServer::endProcessingPacket()
 
 void RcvDelaySignalServer::handleCanPushPacketChanged(cGate *gate)
 {
-//    // DEBUG
-//    if(isDebugTargetModule()){
-//        cout << "**********" << getNedTypeAndFullPath() << " handleCanPushPacketChanged" << endl;
-//    }
     Enter_Method("handleCanPushPacketChanged");
-    if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
-        if (serveTimer)
-            rescheduleAt(simTime(), serveTimer);
-        else {
-            startProcessingPacket();
-            scheduleProcessingTimer();
-        }
+    if (canStartProcessingPacket()) {
+        Packet* packet = startProcessingPacket();
+        scheduleProcessingTimer(packet);
     }
 }
 
 void RcvDelaySignalServer::handleCanPullPacketChanged(cGate *gate)
 {
-//    // DEBUG
-//    if(isDebugTargetModule()){
-//        cout << "**********" << getNedTypeAndFullPath() << " handleCanPullPacketChanged" << endl;
-//    }
     Enter_Method("handleCanPullPacketChanged");
-    if (!processingTimer->isScheduled() && canStartProcessingPacket()) {
-        if (serveTimer)
-            rescheduleAt(simTime(), serveTimer);
-        else {
-            startProcessingPacket();
-            scheduleProcessingTimer();
-        }
+    if (canStartProcessingPacket()) {
+        Packet* packet = startProcessingPacket();
+        scheduleProcessingTimer(packet);
     }
 }
 
 std::string RcvDelaySignalServer::resolveDirective(char directive) const
 {
-    switch (directive) {
-        case 's':
-            return processingTimer->isScheduled() ? "processing" : "";
-        default:
-            return PacketServerBase::resolveDirective(directive);
-    }
+    // switch (directive) {
+    //     case 's':
+    //         return processingTimer->isScheduled() ? "processing" : "";
+    //     default:
+    //         return PacketServerBase::resolveDirective(directive);
+    // }
+    return "";
 }
 
 

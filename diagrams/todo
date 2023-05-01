@@ -1,4 +1,9 @@
 [ ] Found bug: RcvDelaySignalServer will be blocked whenever receives attack signal.
+    possible methods:
+    - ChatGPT help me
+    - use a new thread to receive attack signal
+    - search for similar examples and library classes
+    - understand RcvDelaySignalServer and modify it  
 [x] How to generate random error, and make sure in a period, only generate one error
 
 [x] add bitrate parameter to .ned files

@@ -4,29 +4,34 @@
 #include "inet/common/clock/ClockUserModuleMixin.h"
 #include "inet/queueing/base/PacketServerBase.h"
 #include <iostream>
+#include <unordered_map>
+#include <string>
 
 namespace inet{
 namespace queueing {
 
 using std::cout;
 using std::endl;
+using std::unordered_map;
+using std::string;
 
 class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBase>
 {
     protected:
-      cMessage *serveTimer = nullptr;
-      ClockEvent *processingTimer = nullptr;
-      Packet *packet = nullptr;
+      // ClockEvent *processingTimer = nullptr;
+      // Packet *packet = nullptr;
+      // map storing key value pairs of processing timers and corresponding packets
+      std::unordered_map<ClockEvent *, Packet *> procTimerToPacketMap;
       int delayedPackets = 0;
 
 
     protected:
       virtual void initialize(int stage) override;
       virtual void handleMessage(cMessage *message) override;
-      virtual void scheduleProcessingTimer();
+      virtual void scheduleProcessingTimer(Packet* packet);
       virtual bool canStartProcessingPacket();
-      virtual void startProcessingPacket();
-      virtual void endProcessingPacket();
+      virtual Packet* startProcessingPacket();
+      virtual void endProcessingPacket(Packet* packet, ClockEvent* processingTimer);
       virtual bool isNowInEffect();
 
     public:
