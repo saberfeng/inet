@@ -59,8 +59,8 @@ void RcvDelaySignalServer::handleMessage(cMessage *message)
         updateDisplayString();
     } else {
         // if no, then reschedule the timer
-        int delay_lowerbound_s = 50 * 8 / 1e9; // 50 bits, 1000M
-        int delay_upperbound_s = 1500 * 8 / 1e8; // 1500 bits, 100M
+        double delay_lowerbound_s = 50 * 8 / 1e9; // 50 bits, 1000M
+        double delay_upperbound_s = 1500 * 8 / 1e8; // 1500 bits, 100M
         rescheduleRandomProcessingTimer(packet, processingTimer, 
                                         delay_lowerbound_s, delay_upperbound_s);
     }
@@ -98,7 +98,7 @@ void RcvDelaySignalServer::rescheduleRandomProcessingTimer(Packet* packet,
     // random delay
     auto distribution = std::uniform_real_distribution<double>(
         delay_lowerbound_s, delay_upperbound_s);
-    size_t delayLength_s = distribution(randGenerator);
+    double delayLength_s = distribution(randGenerator);
     scheduleClockEventAfter(delayLength_s, processingTimer);
 }
 
