@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
+#include <random>
 
 namespace inet{
 namespace queueing {
@@ -23,12 +24,16 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       // map storing key value pairs of processing timers and corresponding packets
       std::unordered_map<ClockEvent *, Packet *> procTimerToPacketMap;
       int delayedPackets = 0;
-
+      std::mt19937 randGenerator;
 
     protected:
       virtual void initialize(int stage) override;
       virtual void handleMessage(cMessage *message) override;
       virtual void scheduleProcessingTimer(Packet* packet);
+      virtual void rescheduleRandomProcessingTimer(Packet* packet, 
+                                                 ClockEvent* processingTimer,
+                                                 double delay_lowerbound_s, 
+                                                 double delay_upperbound_s);
       virtual bool canStartProcessingPacket();
       virtual Packet* startProcessingPacket();
       virtual void endProcessingPacket(Packet* packet, ClockEvent* processingTimer);
