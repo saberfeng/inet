@@ -140,7 +140,9 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
         throw cRuntimeError("No close slot found");
     }
     // debug
-    std::cout << "----------------found close duration, t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+    std::cout << "----------------found close duration, "
+              << this->getParentModule()->getParentModule()->getParentModule()->getName()<< "->" << packet->getName()
+              << " t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
               << " " << int(durationEntries[next_close_slot_index].startTimeNs/1000) << "us" 
               << "-" << durationEntries[next_close_slot_index].isOpen
               << "-" << int(durationEntries[next_close_slot_index].durationNs/1000) << std::endl;
@@ -166,7 +168,7 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     }
 
     // debug
-    std::cout << entry.startTimeNs << "-" << entry.durationNs << "-" << entry.isOpen << " ";
+    // std::cout << entry.startTimeNs << "-" << entry.durationNs << "-" << entry.isOpen << " ";
 
     scheduleClockEventAfter(waitDelay/1e9, processingTimer);
 }
@@ -197,8 +199,12 @@ void RcvDelaySignalServer::scheduleProcessingTimer(Packet* packet)
     ClockEvent* processingTimer = new ClockEvent(processingTimerName.c_str());
     procTimerToPacketMap[processingTimer] = packet;
 
-    // scheduleClockEventAfter(delayLength, processingTimer);
-    rescheduleInCloseDuration(packet, processingTimer);
+    if (delayLength>0){
+        rescheduleInCloseDuration(packet, processingTimer);
+    } else {
+        scheduleClockEventAfter(0, processingTimer);
+    }
+    
     if (delayLength > 0){
         std::cout << "Log, Delay Attack, " 
               << this->getParentModule()->getParentModule()->getParentModule()->getName() 

@@ -15,6 +15,7 @@
 #include <ostream>
 #include <unordered_map>
 #include <iostream>
+#include <cmath>
 
 namespace inet{
 namespace queueing{
@@ -37,7 +38,7 @@ protected:
     long long hypercycle; // in ns
     string rawIngressWindows; //"201000-322000 701000-822000"
     string rawGlobalSafeIntervals; //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
-    int curIngressWinIdx;
+    int curIngressWinIdx; // deprecated
 
     int numPackets;
     int numDropped;
@@ -83,6 +84,8 @@ protected:
                    const Window& curInWindow, const vector<Window>& gsIntervals) const;
     void logAction(string actionName, const Packet *packet, long long nsModNow, 
                    const Window& curInWindow) const;
+    bool grterEqualForPrecision(long long left, long long right, long long precision) const;
+    bool lessEqualForPrecision(long long left, long long right, long long precision) const;
 public:
     virtual bool matchesPacket(const Packet *packet) const override; // match->process, not match->drop
 

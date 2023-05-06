@@ -158,12 +158,20 @@ void RobustnessDropper::logAction(
               << std::endl;
 }
 
+
+
 bool RobustnessDropper::matchesPacket(const Packet *packet) const{
     long long nsModNow = getModNow();
-    auto& curInWindow = ingressWindows[curIngressWinIdx];
+    string packetName = packet->getName(); // get packet name: FG17-0
+    string frameIdxStr = packetName.substr(packetName.find("-")+1); // get frame index
+    int curInWindowIdxNew = stoi(frameIdxStr)%ingressWindows.size();
+
+    auto& curInWindow = ingressWindows[curInWindowIdxNew];
     
+    long long precision = 1; // 1ns precision
     if(globalSafe.empty()){
-        if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
+        if(grterEqualForPrecision(nsModNow, curInWindow.start, precision) && 
+           lessEqualForPrecision(nsModNow, curInWindow.end, precision)){
             logAction(string("Hit ingress window"), packet, nsModNow, curInWindow);
             return true;
         } else {
@@ -171,9 +179,10 @@ bool RobustnessDropper::matchesPacket(const Packet *packet) const{
             return false;
         }
     }else{
-        auto& gsIntervals = globalSafe.at(curIngressWinIdx);
+        auto& gsIntervals = globalSafe.at(curInWindowIdxNew);
 
-        if(nsModNow >= curInWindow.start && nsModNow <= curInWindow.end){
+        if(grterEqualForPrecision(nsModNow, curInWindow.start, precision) && 
+           lessEqualForPrecision(nsModNow, curInWindow.end, precision)){
             logAction(string("Hit ingress window"), packet, nsModNow, curInWindow, gsIntervals);
             return true;
         } else if (checkTimeInAnyWindow(nsModNow, gsIntervals)){
@@ -221,6 +230,29 @@ void RobustnessDropper::processPacket(Packet *packet)
              << EV_FIELD(ingressWindows)
              << EV_ENDL;
     numPackets++;
+}
+
+
+bool RobustnessDropper::grterEqualForPrecision(
+    long long left, long long right, long long precision){
+
+    long long absDiff = std::abs(left - right);
+    if (absDiff <= precision){
+        return true;
+    } else {
+        return left > right;
+    }
+}
+
+bool RobustnessDropper::lessEqualForPrecision(
+    long long left, long long right, long long precision){
+
+    long long absDiff = std::abs(right - left);
+    if (absDiff <= precision){
+        return true;
+    } else {
+        return left < right;
+    }
 }
 
 
