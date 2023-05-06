@@ -25,10 +25,32 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       std::unordered_map<ClockEvent *, Packet *> procTimerToPacketMap;
       int delayedPackets = 0;
       std::mt19937 randGenerator;
+      // TT traffic gate schedule parameters
+      bool isOpen_ = false;
+      simtime_t cycleDuration = 0.0;
+      cValueArray *durations = nullptr;
+
+      struct DurationEntry {
+        DurationEntry(long long startTimeNs, long long durationNs, bool isOpen) {
+          this->startTimeNs = startTimeNs;
+          this->durationNs = durationNs;
+          this->isOpen = isOpen;
+        }
+        long long startTimeNs;
+        long long durationNs;
+        bool isOpen;
+      };
+      std::vector<DurationEntry> durationEntries;
+
+    //   std::vector<double> durations_s;
+    //   std::vector<bool> durationsIsOpen;
+
+      std::unordered_map<Packet*, int> packetToDurationIdx;
 
     protected:
       virtual void initialize(int stage) override;
       virtual void handleMessage(cMessage *message) override;
+      virtual void handleParameterChange(const char *name) override;
       virtual void scheduleProcessingTimer(Packet* packet);
       virtual void rescheduleRandomProcessingTimer(Packet* packet, 
                                                  ClockEvent* processingTimer,
@@ -38,6 +60,10 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
       virtual Packet* startProcessingPacket();
       virtual void endProcessingPacket(Packet* packet, ClockEvent* processingTimer);
       virtual bool isNowInEffect();
+      virtual void convertDurationsToVectors();
+      virtual long long getPacketTransDelayNs(Packet* packet);
+      virtual void rescheduleInCloseDuration(Packet* packet, ClockEvent* processingTimer);
+      virtual void printDurationEntries();
 
     public:
       virtual ~RcvDelaySignalServer();

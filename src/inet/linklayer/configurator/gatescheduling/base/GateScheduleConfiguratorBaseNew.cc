@@ -244,18 +244,20 @@ void GateScheduleConfiguratorBaseNew::configureGateScheduling()
         auto networkNode = node->module;
         for (auto interface : node->interfaces) {
             auto queue = interface->networkInterface->findModuleByPath(".macLayer.queue");
+            auto rcvDelaySignalServer = interface->networkInterface->findModuleByPath(".macLayer.server");
             if (queue != nullptr) {
                 for (cModule::SubmoduleIterator it(queue); !it.end(); ++it) {
                     cModule *gate = *it;
                     if (dynamic_cast<queueing::PeriodicGate *>(gate) != nullptr)
-                        configureGateScheduling(networkNode, gate, interface);
+                        configureGateScheduling(networkNode, gate, interface, rcvDelaySignalServer);
                 }
             }
         }
     }
 }
 
-void GateScheduleConfiguratorBaseNew::configureGateScheduling(cModule *networkNode, cModule *gate, Interface *interface)
+void GateScheduleConfiguratorBaseNew::configureGateScheduling(
+    cModule *networkNode, cModule *gate, Interface *interface, cModule *rcvDelaySignalServer)
 {
     auto networkInterface = interface->networkInterface;
     bool initiallyOpen = false;
@@ -287,6 +289,15 @@ void GateScheduleConfiguratorBaseNew::configureGateScheduling(cModule *networkNo
     if (durations->size() % 2 != 0){
         // if num of durations is not even, add one empty slot
         durations->add(cValue(0, "s"));
+    }
+
+    // configure slots info to rcvDelaySignalServer, only configure for the gate 7
+    if (schedule->slots.size() > 5) {
+        rcvDelaySignalServer->par("initiallyOpen") = schedule->slots[0].open;
+        rcvDelaySignalServer->par("cycleDuration") = schedule->cycleDuration.dbl();
+        cPar& durationsPar = rcvDelaySignalServer->par("durations");
+        durationsPar.copyIfShared();
+        durationsPar.setObjectValue(durations);
     }
 
     gate->par("initiallyOpen") = schedule->slots[0].open;

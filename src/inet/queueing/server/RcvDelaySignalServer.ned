@@ -27,5 +27,8 @@ simple RcvDelaySignalServer extends PacketServerBase like IPacketServer
         volatile double effectStartTime @mutable @unit(s) = default(0ms);
         volatile int numDelayPackets @mutable = default(0);
         volatile double processingBitrate @unit(bps) = default(inf bps); // determines additional processing time per bit
+        volatile bool initiallyOpen @mutable = default(true); // specifies if the gate is initially open or closed
+        volatile object durations @mutable @unit(s) = default([]); // list of time durations within the period that determine if the gate is open or closed; period is the sum of the durations
+        volatile double cycleDuration @mutable @unit(s) = default(0s);
         @class(RcvDelaySignalServer);
 }

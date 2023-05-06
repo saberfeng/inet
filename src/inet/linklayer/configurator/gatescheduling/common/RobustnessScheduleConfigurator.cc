@@ -155,13 +155,13 @@ RobustnessScheduleConfigurator::ScheduleMap RobustnessScheduleConfigurator::pars
         port_schedule->gating_cycle = str_us_to_s(line_components[3]);
         simtime_t start = 0;
         for(int i=4; i<line_components.size();i++){
-            string& raw_slot = line_components[i];
+            string& raw_slot = line_components[i]; // 11111111-0-False-76.480
             if(raw_slot.empty()){
                 continue;
             }
             vector<string> slot_components = splitString(raw_slot, string("-"));
-            string raw_operations = slot_components[0];
-            simtime_t duration = str_us_to_s(slot_components[3]);
+            string raw_operations = slot_components[0]; // 11111111
+            simtime_t duration = str_us_to_s(slot_components[3]); // 76.480
             for(int gate_idx=0; gate_idx<raw_operations.size(); gate_idx++){
                 bool gate_open = stoi(raw_operations.substr(gate_idx,1));
                 Output::Slot slot(start, duration, gate_open);

@@ -27,9 +27,51 @@ void RcvDelaySignalServer::initialize(int stage)
     ClockUserModuleMixin::initialize(stage);
     if (stage == INITSTAGE_LOCAL) {
         // processingTimer = new ClockEvent("ProcessingTimer");
+        isOpen_ = par("initiallyOpen");
+        durations = check_and_cast<cValueArray *>(par("durations").objectValue());
+        cycleDuration = par("cycleDuration");
+        convertDurationsToVectors();
     }
     int seed = 0;
     randGenerator = std::mt19937(seed);
+}
+
+void RcvDelaySignalServer::printDurationEntries(){
+    // all entries in one line
+    // each entry: startTimeNs-durationNs-isOpen
+    for (int i = 0; i < durationEntries.size(); i++){
+        DurationEntry entry = durationEntries[i];
+        std::cout << entry.startTimeNs << "-" << entry.durationNs << "-" << entry.isOpen << " ";
+    }
+    std::cout<<std::endl;
+}
+
+void RcvDelaySignalServer::handleParameterChange(const char *name)
+{
+    if (name != nullptr) {
+        if (!strcmp(name, "initiallyOpen"))
+            isOpen_ = par("initiallyOpen");
+        else if (!strcmp(name, "durations")) {
+            durations = check_and_cast<cValueArray *>(par("durations").objectValue());
+            convertDurationsToVectors();
+        } else if (!strcmp(name, "cycleDuration")) {
+            cycleDuration = par("cycleDuration");
+        }
+    }
+}
+
+void RcvDelaySignalServer::convertDurationsToVectors(){
+    if (durations->size() % 2 != 0)
+        throw cRuntimeError("The duration parameter must contain an even number of values");
+    bool cur_slot_is_open = isOpen_;
+    long long startTimeNs = 0;
+    for(int i = 0; i < durations->size(); i ++){
+        double dur_s = durations->get(i).doubleValueInUnit("s");
+        long long durNs = dur_s * 1e9;
+        durationEntries.push_back(DurationEntry(startTimeNs, durNs, cur_slot_is_open));
+        cur_slot_is_open = !cur_slot_is_open;
+        startTimeNs += durNs;
+    }
 }
 
 
@@ -58,12 +100,87 @@ void RcvDelaySignalServer::handleMessage(cMessage *message)
         }
         updateDisplayString();
     } else {
-        // if no, then reschedule the timer
-        double delay_lowerbound_s = 50 * 8 / 1e9; // 50 bits, 1000M
-        double delay_upperbound_s = 1500 * 8 / 1e8; // 1500 bits, 100M
-        rescheduleRandomProcessingTimer(packet, processingTimer, 
-                                        delay_lowerbound_s, delay_upperbound_s);
+        rescheduleInCloseDuration(packet, processingTimer);
     }
+}
+
+void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent* processingTimer){
+    // iterate durations, find the next close slot
+    simtime_t now = simTime();
+    // get current simtime mod cycleDuration, in ns
+    long long now_ns = now.dbl() * 1e9;
+    long long cycleDuration_ns = cycleDuration.dbl() * 1e9;
+    long long now_mod_ns = now_ns % cycleDuration_ns;
+
+    // printDurationEntries();
+
+    // find the first slot has startTimeNs >= now_mod_cycleDuration_ns
+    int nxt_slot_index = 0;
+    for(int i = 0; i < durationEntries.size(); i ++){
+        if (durationEntries[i].startTimeNs >= now_mod_ns){
+            nxt_slot_index = i;
+            break;
+        }
+    }
+
+    long long pktTxDelayNs = getPacketTransDelayNs(packet);
+
+    // starting from the nxt_slot_index, find the next close slot
+    // if no close slot, then find from the beginning of the cycle
+    int next_close_slot_index = -1;
+    for(int i = 0; i < durationEntries.size(); i ++){
+        int cur_idx = (nxt_slot_index + i)%durationEntries.size();
+        if (!durationEntries[cur_idx].isOpen && 
+                durationEntries[cur_idx].durationNs >= pktTxDelayNs){
+            next_close_slot_index = cur_idx;
+            break;
+        }
+    }
+    if (next_close_slot_index==-1){
+        throw cRuntimeError("No close slot found");
+    }
+    // debug
+    std::cout << "----------------found close duration, t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << " " << int(durationEntries[next_close_slot_index].startTimeNs/1000) << "us" 
+              << "-" << durationEntries[next_close_slot_index].isOpen
+              << "-" << int(durationEntries[next_close_slot_index].durationNs/1000) << std::endl;
+
+    // create a new DurationEntry with the delayNs, for this packet
+    DurationEntry newDurationEntry(
+        durationEntries[next_close_slot_index].startTimeNs,
+                                    pktTxDelayNs, true);
+    // insert the newDurationEntry into durationEntries
+    durationEntries.insert(durationEntries.begin() + next_close_slot_index,
+                            newDurationEntry);
+    // update the durationNs and startTimeNs of the splitted duration entry
+    durationEntries[next_close_slot_index+1].durationNs -= pktTxDelayNs;
+    durationEntries[next_close_slot_index+1].startTimeNs += pktTxDelayNs;
+    
+    packetToDurationIdx[packet] = next_close_slot_index;
+
+    long long waitDelay = 0;
+    if (now_mod_ns < newDurationEntry.startTimeNs){
+        waitDelay = newDurationEntry.startTimeNs - now_mod_ns;
+    } else {
+        waitDelay = cycleDuration_ns - now_mod_ns + newDurationEntry.startTimeNs;
+    }
+
+    // debug
+    std::cout << entry.startTimeNs << "-" << entry.durationNs << "-" << entry.isOpen << " ";
+
+    scheduleClockEventAfter(waitDelay/1e9, processingTimer);
+}
+
+long long RcvDelaySignalServer::getPacketTransDelayNs(Packet* packet){
+    // get the interface, which is this server module's parent of parent
+    cModule* interface = getParentModule()->getParentModule();
+    // get the bitrate parameter
+    double bitrate = interface->par("bitrate").doubleValue(); // bps
+    // get the packet length
+    long long packetByteLength = packet->getByteLength();
+    // get the delay in ns
+    long long delayNs = (packetByteLength * 8 / bitrate) * 1e9;
+    return delayNs;
 }
 
 void RcvDelaySignalServer::scheduleProcessingTimer(Packet* packet)
@@ -80,7 +197,8 @@ void RcvDelaySignalServer::scheduleProcessingTimer(Packet* packet)
     ClockEvent* processingTimer = new ClockEvent(processingTimerName.c_str());
     procTimerToPacketMap[processingTimer] = packet;
 
-    scheduleClockEventAfter(delayLength, processingTimer);
+    // scheduleClockEventAfter(delayLength, processingTimer);
+    rescheduleInCloseDuration(packet, processingTimer);
     if (delayLength > 0){
         std::cout << "Log, Delay Attack, " 
               << this->getParentModule()->getParentModule()->getParentModule()->getName() 
@@ -139,6 +257,11 @@ void RcvDelaySignalServer::endProcessingPacket(Packet* packet, ClockEvent* proce
 
     // remove the timer from the map
     procTimerToPacketMap.erase(processingTimer);
+    // remove packet corresponding duration entry
+    int durationIdx = packetToDurationIdx[packet];
+    durationEntries.erase(durationEntries.begin() + durationIdx);
+    // remove packet from packetToDurationIdx
+    packetToDurationIdx.erase(packet);
 
     packet = nullptr;
 }
