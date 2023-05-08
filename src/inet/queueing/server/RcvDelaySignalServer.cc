@@ -105,6 +105,14 @@ void RcvDelaySignalServer::handleMessage(cMessage *message)
 }
 
 void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent* processingTimer){
+
+    // debug--------------------
+    // get packet name
+    std::string packetName = packet->getName();
+    if (packetName == string("FG6-1")){
+        simtime_t now1 = simTime();
+    }// ------------------------
+    
     // iterate durations, find the next close slot
     simtime_t now = simTime();
     // get current simtime mod cycleDuration, in ns
@@ -124,6 +132,8 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     }
 
     long long pktTxDelayNs = getPacketTransDelayNs(packet);
+    long long spacing = 300; // 3us, 300ns
+    long long expandedPktTxDelayNs = pktTxDelayNs + spacing; // eliminate prop delay and precision error
 
     // starting from the nxt_slot_index, find the next close slot
     // if no close slot, then find from the beginning of the cycle
@@ -131,7 +141,7 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     for(int i = 0; i < durationEntries.size(); i ++){
         int cur_idx = (nxt_slot_index + i)%durationEntries.size();
         if (!durationEntries[cur_idx].isOpen && 
-                durationEntries[cur_idx].durationNs >= pktTxDelayNs){
+                durationEntries[cur_idx].durationNs >= expandedPktTxDelayNs){
             next_close_slot_index = cur_idx;
             break;
         }
@@ -139,36 +149,35 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     if (next_close_slot_index==-1){
         throw cRuntimeError("No close slot found");
     }
-    // debug
-    std::cout << "----------------found close duration, "
-              << this->getParentModule()->getParentModule()->getParentModule()->getName()<< "->" << packet->getName()
-              << " t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
-              << " pktTxDelay:" << pktTxDelayNs/1000 << "us"
-              << " nxtTry:" << durationEntries[next_close_slot_index].startTimeNs/1000 << "us"
-              << " durLen:" << durationEntries[next_close_slot_index].durationNs/1000 << std::endl;
 
     // create a new DurationEntry with the delayNs, for this packet
     DurationEntry newDurationEntry(
         durationEntries[next_close_slot_index].startTimeNs,
-                                    pktTxDelayNs, true);
+        expandedPktTxDelayNs, true);
     // insert the newDurationEntry into durationEntries
     durationEntries.insert(durationEntries.begin() + next_close_slot_index,
                             newDurationEntry);
     // update the durationNs and startTimeNs of the splitted duration entry
-    durationEntries[next_close_slot_index+1].durationNs -= pktTxDelayNs;
-    durationEntries[next_close_slot_index+1].startTimeNs += pktTxDelayNs;
+    durationEntries[next_close_slot_index+1].durationNs -= newDurationEntry.durationNs;
+    durationEntries[next_close_slot_index+1].startTimeNs += newDurationEntry.durationNs;
     
     packetToDurationIdx[packet] = next_close_slot_index;
 
     long long waitDelay = 0;
     if (now_mod_ns < newDurationEntry.startTimeNs){
-        waitDelay = newDurationEntry.startTimeNs - now_mod_ns;
+        waitDelay = newDurationEntry.startTimeNs + spacing - now_mod_ns;
     } else {
-        waitDelay = cycleDuration_ns - now_mod_ns + newDurationEntry.startTimeNs;
+        waitDelay = cycleDuration_ns - now_mod_ns + newDurationEntry.startTimeNs + spacing;
     }
 
     // debug
-    // std::cout << entry.startTimeNs << "-" << entry.durationNs << "-" << entry.isOpen << " ";
+    std::cout << "----------------found close duration, "
+              << this->getParentModule()->getParentModule()->getParentModule()->getName()<< "->" << packet->getName()
+              << " t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << " pktTxDelay:" << pktTxDelayNs/1000.0 << "us"
+              << " nxtTry:" << durationEntries[next_close_slot_index].startTimeNs/1000.0 << "us"
+              << " wait:" << waitDelay/1000.0 << "us"
+              << " durLen:" << durationEntries[next_close_slot_index].durationNs/1000.0 << "us" << std::endl;
 
     scheduleClockEventAfter(waitDelay/1e9, processingTimer);
 }
@@ -247,7 +256,8 @@ void RcvDelaySignalServer::endProcessingPacket(Packet* packet, ClockEvent* proce
     std::cout << "Log, Dispacth packet, " 
               << this->getParentModule()->getParentModule()->getParentModule()->getName()
               << "->" << packet->getName() 
-              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US) << std::endl;
+              << ", t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
+              << " pktTx:" << getPacketTransDelayNs(packet)/1000.0 << "us" << std::endl;
     simtime_t packetProcessingTime = simTime() - processingTimer->getSendingTime();
     simtime_t bitProcessingTime = packetProcessingTime / packet->getBitLength();
     insertPacketEvent(this, packet, PEK_PROCESSED, bitProcessingTime);
