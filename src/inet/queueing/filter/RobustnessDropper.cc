@@ -234,7 +234,7 @@ void RobustnessDropper::processPacket(Packet *packet)
 
 
 bool RobustnessDropper::grterEqualForPrecision(
-    long long left, long long right, long long precision){
+    long long left, long long right, long long precision) const {
 
     long long absDiff = std::abs(left - right);
     if (absDiff <= precision){
@@ -245,7 +245,7 @@ bool RobustnessDropper::grterEqualForPrecision(
 }
 
 bool RobustnessDropper::lessEqualForPrecision(
-    long long left, long long right, long long precision){
+    long long left, long long right, long long precision) const {
 
     long long absDiff = std::abs(right - left);
     if (absDiff <= precision){

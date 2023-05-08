@@ -143,9 +143,9 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     std::cout << "----------------found close duration, "
               << this->getParentModule()->getParentModule()->getParentModule()->getName()<< "->" << packet->getName()
               << " t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
-              << " " << int(durationEntries[next_close_slot_index].startTimeNs/1000) << "us" 
-              << "-" << durationEntries[next_close_slot_index].isOpen
-              << "-" << int(durationEntries[next_close_slot_index].durationNs/1000) << std::endl;
+              << " pktTxDelay:" << pktTxDelayNs/1000 << "us"
+              << " nxtTry:" << durationEntries[next_close_slot_index].startTimeNs/1000 << "us"
+              << " durLen:" << durationEntries[next_close_slot_index].durationNs/1000 << std::endl;
 
     // create a new DurationEntry with the delayNs, for this packet
     DurationEntry newDurationEntry(
