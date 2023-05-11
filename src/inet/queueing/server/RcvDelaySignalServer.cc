@@ -106,12 +106,12 @@ void RcvDelaySignalServer::handleMessage(cMessage *message)
 
 void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent* processingTimer){
 
-    // debug--------------------
-    // get packet name
-    std::string packetName = packet->getName();
-    if (packetName == string("FG6-1")){
-        simtime_t now1 = simTime();
-    }// ------------------------
+    // // debug--------------------
+    // // get packet name
+    // std::string packetName = packet->getName();
+    // if (packetName == string("FG71-0")){
+    //     simtime_t now1 = simTime();
+    // }// ------------------------
     
     // iterate durations, find the next close slot
     simtime_t now = simTime();
@@ -132,8 +132,9 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     }
 
     long long pktTxDelayNs = getPacketTransDelayNs(packet);
-    long long spacing = 300; // 3us, 300ns
-    long long expandedPktTxDelayNs = pktTxDelayNs + spacing; // eliminate prop delay and precision error
+    long long front_spacing = 3000; // 3us, 3000ns
+    long long tail_spacing = 2000; // 2us, 2000ns
+    long long expandedPktTxDelayNs = pktTxDelayNs + front_spacing + tail_spacing; // eliminate prop delay and precision error
 
     // starting from the nxt_slot_index, find the next close slot
     // if no close slot, then find from the beginning of the cycle
@@ -141,7 +142,7 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     for(int i = 0; i < durationEntries.size(); i ++){
         int cur_idx = (nxt_slot_index + i)%durationEntries.size();
         if (!durationEntries[cur_idx].isOpen && 
-                durationEntries[cur_idx].durationNs >= expandedPktTxDelayNs){
+             durationEntries[cur_idx].durationNs >= expandedPktTxDelayNs){
             next_close_slot_index = cur_idx;
             break;
         }
@@ -149,6 +150,8 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     if (next_close_slot_index==-1){
         throw cRuntimeError("No close slot found");
     }
+
+    long long originalDurLen = durationEntries[next_close_slot_index].durationNs;
 
     // create a new DurationEntry with the delayNs, for this packet
     DurationEntry newDurationEntry(
@@ -165,9 +168,9 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
 
     long long waitDelay = 0;
     if (now_mod_ns < newDurationEntry.startTimeNs){
-        waitDelay = newDurationEntry.startTimeNs + spacing - now_mod_ns;
+        waitDelay = newDurationEntry.startTimeNs + front_spacing - now_mod_ns;
     } else {
-        waitDelay = cycleDuration_ns - now_mod_ns + newDurationEntry.startTimeNs + spacing;
+        waitDelay = cycleDuration_ns - now_mod_ns + newDurationEntry.startTimeNs + front_spacing;
     }
 
     // debug
@@ -175,9 +178,9 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
               << this->getParentModule()->getParentModule()->getParentModule()->getName()<< "->" << packet->getName()
               << " t:" << simTime().ustr(SimTimeUnit::SIMTIME_US)
               << " pktTxDelay:" << pktTxDelayNs/1000.0 << "us"
-              << " nxtTry:" << durationEntries[next_close_slot_index].startTimeNs/1000.0 << "us"
+              << " nxtTry:" << (durationEntries[next_close_slot_index].startTimeNs+front_spacing)/1000.0 << "us"
               << " wait:" << waitDelay/1000.0 << "us"
-              << " durLen:" << durationEntries[next_close_slot_index].durationNs/1000.0 << "us" << std::endl;
+              << " durLen:" << originalDurLen/1000.0 << "us" << std::endl;
 
     scheduleClockEventAfter(waitDelay/1e9, processingTimer);
 }
@@ -188,7 +191,7 @@ long long RcvDelaySignalServer::getPacketTransDelayNs(Packet* packet){
     // get the bitrate parameter
     double bitrate = interface->par("bitrate").doubleValue(); // bps
     // get the packet length
-    long long packetByteLength = packet->getByteLength();
+    long long packetByteLength = packet->getByteLength() + 8;
     // get the delay in ns
     long long delayNs = (packetByteLength * 8 / bitrate) * 1e9;
     return delayNs;
