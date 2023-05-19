@@ -45,7 +45,7 @@ class INET_API RcvDelaySignalServer : public ClockUserModuleMixin<PacketServerBa
     //   std::vector<double> durations_s;
     //   std::vector<bool> durationsIsOpen;
 
-      std::unordered_map<Packet*, int> packetToDurationIdx;
+      std::unordered_map<std::string, int> packetToTmpDurationIdx;
 
     protected:
       virtual void initialize(int stage) override;

@@ -164,7 +164,7 @@ void RcvDelaySignalServer::rescheduleInCloseDuration(Packet* packet, ClockEvent*
     durationEntries[next_close_slot_index+1].durationNs -= newDurationEntry.durationNs;
     durationEntries[next_close_slot_index+1].startTimeNs += newDurationEntry.durationNs;
     
-    packetToDurationIdx[packet] = next_close_slot_index;
+    packetToTmpDurationIdx[string(packet->getName())] = next_close_slot_index;
 
     long long waitDelay = 0;
     if (now_mod_ns < newDurationEntry.startTimeNs){
@@ -277,11 +277,12 @@ void RcvDelaySignalServer::endProcessingPacket(Packet* packet, ClockEvent* proce
     // remove the timer from the map
     procTimerToPacketMap.erase(processingTimer);
     // remove packet corresponding duration entry
-    int durationIdx = packetToDurationIdx[packet];
-    durationEntries.erase(durationEntries.begin() + durationIdx);
-    // remove packet from packetToDurationIdx
-    packetToDurationIdx.erase(packet);
-
+    string packetName = string(packet->getName());
+    if (packetToTmpDurationIdx.find(packetName) != packetToTmpDurationIdx.end()){
+        int durationIdx = packetToTmpDurationIdx[packetName];
+        durationEntries.erase(durationEntries.begin() + durationIdx);
+        packetToTmpDurationIdx.erase(packetName);
+    }
     packet = nullptr;
 }
 
