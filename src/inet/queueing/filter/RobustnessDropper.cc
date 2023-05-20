@@ -40,6 +40,10 @@ void RobustnessDropper::initialize(int stage)
         rawIngressWindows = tmp1;
         string tmp2 = par("globalSafeIntervals");
         rawGlobalSafeIntervals = tmp2;
+        useRandomFilter = par("useRandomFilter");
+
+        randGenerator = std::mt19937(123);
+        randDistribution = std::uniform_int_distribution<>(0, 1);
     } else if (stage == INITSTAGE_QUEUEING) {
         parseIngressWindows();
         parseGlobalSafe();
@@ -63,6 +67,8 @@ void RobustnessDropper::handleParameterChange(const char *name)
             string tmp = par("globalSafeIntervals");
             rawGlobalSafeIntervals = tmp;
             parseGlobalSafe();
+        } else if (!strcmp(name, "useRandomFilter")) {
+            useRandomFilter = par("useRandomFilter");
         }
     }
 }
@@ -175,8 +181,17 @@ bool RobustnessDropper::matchesPacket(const Packet *packet) const{
             logAction(string("Hit ingress window"), packet, nsModNow, curInWindow);
             return true;
         } else {
-            logAction(string("Dropping packet"), packet, nsModNow, curInWindow);
-            return false;
+            if (useRandomFilter){
+                if (randDistribution(randGenerator) < 0.5){ // 50% drop rate
+                    return true;
+                } else {
+                    logAction(string("Dropping packet"), packet, nsModNow, curInWindow);
+                    return false;
+                }
+            } else{
+                logAction(string("Dropping packet"), packet, nsModNow, curInWindow);
+                return false;
+            }
         }
     }else{
         auto& gsIntervals = globalSafe.at(curInWindowIdxNew);

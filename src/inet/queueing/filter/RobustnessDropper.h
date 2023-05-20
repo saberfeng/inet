@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <cmath>
+#include <random>
 
 namespace inet{
 namespace queueing{
@@ -39,6 +40,10 @@ protected:
     string rawIngressWindows; //"201000-322000 701000-822000"
     string rawGlobalSafeIntervals; //"201000-322000:121000-122000 122000-334000,701000-822000:121000-122000 122000-321000"
     int curIngressWinIdx; // deprecated
+    bool useRandomFilter;
+
+    std::mt19937 randGenerator;
+    std::uniform_int_distribution<> randDistribution;
 
     int numPackets;
     int numDropped;
